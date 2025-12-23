@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Chamado - #2025-849</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- MESMAS VARIÁVEIS DO DASHBOARD --- */
+        :root {
+            --sidebar-bg: #10243e;
+            --main-bg: #eef2f5;
+            --card-white: #ffffff;
+            --accent-orange: #fca311;
+            --text-grey: #a0a0a0;
+            --status-open: #2ecc71;  /* Verde para aberto */
+            --status-high: #e74c3c;  /* Vermelho para prioridade alta */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body { background-color: var(--main-bg); display: flex; height: 100vh; overflow: hidden; }
+
+        /* --- REUTILIZANDO SIDEBAR --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+        .profile-section { display: flex; flex-direction: column; align-items: center; margin: 20px 0 40px 0; }
+        .profile-img { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sidebar-bg); font-size: 30px; margin-bottom: 10px; }
+        .profile-name { font-size: 16px; font-weight: 600; }
+        .nav-menu { list-style: none; width: 100%; }
+        .nav-menu li { margin-bottom: 15px; }
+        .nav-menu a { text-decoration: none; color: #8da1b9; display: flex; align-items: center; padding: 10px; border-radius: 8px; transition: 0.3s; font-size: 14px; }
+        .nav-menu a:hover, .nav-menu a.active { color: white; background-color: rgba(255,255,255,0.1); }
+        .nav-menu a i { margin-right: 15px; width: 20px; text-align: center; }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+
+        /* Cabeçalho da página */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .breadcrumb { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .ticket-title { font-size: 24px; color: #333; font-weight: 600; display: flex; align-items: center; gap: 15px; }
+        .ticket-id { font-size: 16px; color: #888; font-weight: 400; }
+
+        /* Grid do Layout do Chamado */
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr; /* 70% Chat, 30% Info */
+            gap: 25px;
+        }
+
+        /* Área de Chat / Mensagens */
+        .conversation-area { display: flex; flex-direction: column; gap: 20px; }
+
+        .message-card {
+            background: var(--card-white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            position: relative;
+        }
+
+        /* Estilo visual para diferenciar Cliente vs Suporte */
+        .msg-client { border-left: 4px solid #ccc; }
+        .msg-support { border-left: 4px solid var(--sidebar-bg); background-color: #f8fafd; }
+
+        .msg-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar-small { width: 35px; height: 35px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #555; }
+        .support-avatar { background: var(--sidebar-bg); color: white; }
+        
+        .user-name { font-weight: 600; font-size: 14px; color: #333; }
+        .msg-date { font-size: 12px; color: #999; }
+        
+        .msg-body { font-size: 14px; color: #555; line-height: 1.6; }
+
+        /* Área de Resposta */
+        .reply-box {
+            background: var(--card-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+        .reply-textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+        .reply-textarea:focus { border-color: var(--sidebar-bg); background: white; }
+        
+        .reply-actions { display: flex; justify-content: space-between; align-items: center; }
+        .btn-attach { color: #666; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .btn-attach:hover { color: var(--sidebar-bg); }
+        
+        .btn-send {
+            background-color: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .btn-send:hover { background-color: #e09210; transform: translateY(-2px); }
+
+        /* Sidebar Direita (Infos) */
+        .info-sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+        .info-card {
+            background: var(--card-white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .info-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; }
+        .info-label { color: #888; }
+        .info-value { font-weight: 500; color: #333; text-align: right; }
+
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; color: white; }
+        .badge-open { background-color: var(--status-open); }
+        .badge-high { background-color: var(--status-high); }
+
+        .action-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #555;
+            transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .action-btn:hover { background: #f5f5f5; border-color: #ccc; }
+        .btn-close { color: #e74c3c; border-color: #fadbd8; }
+        .btn-close:hover { background: #fadbd8; }
+
+        /* Responsividade */
+        @media (max-width: 900px) {
+            .ticket-grid { grid-template-columns: 1fr; }
+            .sidebar { width: 70px; padding: 10px; }
+            .profile-name, .nav-menu span, .ticket-id { display: none; }
+            .nav-menu a { justify-content: center; }
+            .nav-menu a i { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="profile-section">
+            <div class="profile-img"><i class="fa-solid fa-user"></i></div>
+            <div class="profile-name">JOHN DON</div>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#"><i class="fa-solid fa-house"></i> <span>Home</span></a></li>
+            <li><a href="#" class="active"><i class="fa-solid fa-ticket"></i> <span>Chamados</span></a></li>
+            <li><a href="#"><i class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a></li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
+            <li><a href="#"><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">Chamados / Hardware / #2025-849</div>
+                <h2 class="ticket-title">
+                    Impressora não conecta na rede
+                    <span class="ticket-id">#2025-849</span>
+                </h2>
+            </div>
+            <button style="background:none; border:none; cursor:pointer; font-size:16px; color:#666;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+
+        <div class="ticket-grid">
+            
+            <div class="conversation-area">
+                
+                <div class="message-card msg-client">
+                    <div class="msg-header">
+                        <div class="user-info">
+                            <div class="avatar-small"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <div class="user-name">John Don</div>
+                                <div style="font-size:11px; color:#888;">Cliente</div>
+                            </div>
+                        </div>
+                        <div class="msg-date">23 Dez, 10:30</div>
+                    </div>
+                    <div class="msg-body">
+                        <p>Bom dia, estou tentando imprimir um relatório urgente, mas a impressora do 2º andar (HP Laserjet) não aparece na minha lista de dispositivos de rede. Já reiniciei meu computador e nada.</p>
+                    </div>
+                </div>
+
+                <div class="message-card msg-support">
+                    <div class="msg-header">
+                        <div class="user-info">
+                            <div class="avatar-small support-avatar"><i class="fa-solid fa-headset"></i></div>
+                            <div>
+                                <div class="user-name">Suporte Técnico</div>
+                                <div style="font-size:11px; color:#10243e;">Agente</div>
+                            </div>
+                        </div>
+                        <div class="msg-date">23 Dez, 10:45</div>
+                    </div>
+                    <div class="msg-body">
+                        <p>Olá John, recebemos seu chamado. Estamos verificando o servidor de impressão. Por favor, verifique se o cabo de rede atrás da impressora está com a luz verde piscando.</p>
+                    </div>
+                </div>
+
+                <div class="reply-box">
+                    <div style="font-weight:600; margin-bottom:10px; color:#333;">Adicionar Resposta</div>
+                    <textarea class="reply-textarea" placeholder="Digite sua resposta aqui..."></textarea>
+                    
+                    <div class="reply-actions">
+                        <div class="btn-attach">
+                            <i class="fa-solid fa-paperclip"></i> Anexar arquivo
+                        </div>
+                        <button class="btn-send">
+                            Enviar Resposta <i class="fa-solid fa-paper-plane" style="margin-left:5px;"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="info-sidebar">
+                
+                <div class="info-card">
+                    <div class="info-title">Detalhes do Chamado</div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="badge badge-open">Em Aberto</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Prioridade:</span>
+                        <span class="badge badge-high">Alta</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Departamento:</span>
+                        <span class="info-value">Financeiro</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Categoria:</span>
+                        <span class="info-value">Hardware</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">SLA (Prazo):</span>
+                        <span class="info-value" style="color:#e74c3c;">4 horas restantes</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-title">Atribuição</div>
+                    <div class="info-row" style="align-items:center;">
+                        <span class="info-label">Técnico:</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <div class="avatar-small support-avatar" style="width:20px; height:20px; font-size:10px;">MR</div>
+                            <span class="info-value">Maria R.</span>
+                        </div>
+                    </div>
+                    
+                    <button class="action-btn">
+                        <i class="fa-solid fa-share"></i> Reatribuir
+                    </button>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-title">Ações</div>
+                    <button class="action-btn btn-close">
+                        <i class="fa-solid fa-check"></i> Marcar como Resolvido
+                    </button>
+                    <button class="action-btn">
+                        <i class="fa-solid fa-ban"></i> Cancelar Chamado
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

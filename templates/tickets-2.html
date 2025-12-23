@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Chamado - Sistema de Tickets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- VARIÁVEIS GLOBAIS (Mesmo padrão) --- */
+        :root {
+            --sidebar-bg: #10243e;
+            --main-bg: #eef2f5;
+            --card-white: #ffffff;
+            --accent-orange: #fca311;
+            --text-grey: #a0a0a0;
+            --input-bg: #f9f9f9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body { background-color: var(--main-bg); display: flex; height: 100vh; overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+        .profile-section { display: flex; flex-direction: column; align-items: center; margin: 20px 0 40px 0; }
+        .profile-img { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--sidebar-bg); font-size: 30px; margin-bottom: 10px; }
+        .profile-name { font-size: 16px; font-weight: 600; }
+        .nav-menu { list-style: none; width: 100%; }
+        .nav-menu li { margin-bottom: 15px; }
+        .nav-menu a { text-decoration: none; color: #8da1b9; display: flex; align-items: center; padding: 10px; border-radius: 8px; transition: 0.3s; font-size: 14px; }
+        .nav-menu a:hover, .nav-menu a.active { color: white; background-color: rgba(255,255,255,0.1); }
+        .nav-menu a i { margin-right: 15px; width: 20px; text-align: center; }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+
+        /* Header da Página */
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .page-title h2 { color: #333; font-weight: 600; font-size: 24px; }
+        .page-title p { color: #888; font-size: 13px; }
+
+        /* Card do Formulário */
+        .form-card {
+            background: var(--card-white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto; /* Centralizar horizontalmente */
+            border-top: 4px solid var(--accent-orange); /* Detalhe visual laranja */
+        }
+
+        /* Estilos dos Inputs (Baseado no Login) */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 13px; color: #555; margin-bottom: 8px; font-weight: 500; }
+        .input-group label span { color: var(--accent-orange); } /* Asterisco obrigatório */
+
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 15px; top: 15px; color: var(--text-grey); font-size: 14px; }
+        
+        /* Ajuste para ícone no select e textarea */
+        .input-wrapper.select-icon i { top: 50%; transform: translateY(-50%); }
+        .input-wrapper.textarea-icon i { top: 15px; }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 40px; /* Espaço para o ícone */
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: #333;
+            outline: none;
+            transition: 0.3s;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-control:focus {
+            border-color: var(--sidebar-bg);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(16, 36, 62, 0.1);
+        }
+
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        /* Radio Buttons Customizados */
+        .radio-group { display: flex; gap: 20px; padding-top: 5px; flex-wrap: wrap; }
+        .radio-option { display: flex; align-items: center; cursor: pointer; font-size: 13px; color: #555; }
+        .radio-option input { margin-right: 8px; accent-color: var(--sidebar-bg); width: 16px; height: 16px; }
+
+        /* Input de Arquivo (Estilizado) */
+        .file-upload-wrapper {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            text-align: center;
+            position: relative;
+            transition: 0.3s;
+        }
+        .file-upload-wrapper:hover { border-color: var(--sidebar-bg); background-color: #fff; }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;
+        }
+        .file-content i { font-size: 24px; color: var(--text-grey); margin-bottom: 5px; display: block;}
+        .file-content span { font-size: 12px; color: #666; }
+
+        /* Botões */
+        .form-actions { margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end; }
+        
+        .btn-cancel {
+            background: #fff; border: 1px solid #ddd; color: #666; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.3s;
+        }
+        .btn-cancel:hover { background: #f5f5f5; }
+
+        .btn-submit {
+            background-color: var(--accent-orange); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; box-shadow: 0 4px 10px rgba(252, 163, 17, 0.2);
+        }
+        .btn-submit:hover { background-color: #e09210; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(252, 163, 17, 0.3); }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+            .sidebar { width: 70px; padding: 10px; }
+            .profile-name, .nav-menu span { display: none; }
+            .nav-menu a { justify-content: center; } .nav-menu a i { margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="profile-section">
+            <div class="profile-img"><i class="fa-solid fa-user"></i></div>
+            <div class="profile-name">JOHN DON</div>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#"><i class="fa-solid fa-house"></i> <span>Home</span></a></li>
+            <li><a href="#"><i class="fa-solid fa-ticket"></i> <span>Meus Chamados</span></a></li>
+            <li><a href="#" class="active"><i class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a></li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
+            <li><a href="#"><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="page-header">
+            <div class="page-title">
+                <h2>Abrir Novo Chamado</h2>
+                <p>Preencha os detalhes abaixo para solicitar suporte.</p>
+            </div>
+        </header>
+
+        <div class="form-card">
+            <form action="#" method="POST" enctype="multipart/form-data">
+                
+                <div class="input-group">
+                    <label for="assunto">Assunto Principal <span>*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-heading"></i>
+                        <input type="text" id="assunto" class="form-control" placeholder="Ex: Erro ao acessar o sistema de RH" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="categoria">Categoria <span>*</span></label>
+                        <div class="input-wrapper select-icon">
+                            <i class="fa-solid fa-list"></i>
+                            <select id="categoria" name="categoria" class="form-control" required>
+                                <option value="" disabled selected>Selecione...</option>
+                                <option value="sistema">Software / Sistema</option>
+                                <option value="hardware">Hardware / Equipamento</option>
+                                <option value="rede">Rede / Internet</option>
+                                <option value="acesso">Acessos e Senhas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Prioridade <span>*</span></label>
+                        <div class="radio-group" style="height: 45px; align-items: center;">
+                            <label class="radio-option">
+                                <input type="radio" name="prioridade" value="baixa" checked> Baixa
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="prioridade" value="media"> Média
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="prioridade" value="alta"> Alta
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="prioridade" value="urgente"> <span style="color: #e74c3c; font-weight:600;">Urgente</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="descricao">Descrição Detalhada <span>*</span></label>
+                    <div class="input-wrapper textarea-icon">
+                        <i class="fa-solid fa-align-left"></i>
+                        <textarea id="descricao" name="descricao" class="form-control" placeholder="Descreva o que aconteceu, mensagens de erro e passos para reproduzir..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Anexar Arquivo (Printscreen ou Logs)</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="anexo" name="anexo">
+                        <div class="file-content">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Arraste um arquivo ou <strong>clique para selecionar</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i> Enviar Chamado
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+
+</body>
+</html>

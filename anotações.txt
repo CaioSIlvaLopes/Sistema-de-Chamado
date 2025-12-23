@@ -1,0 +1,18 @@
+cd meu_projeto
+
+python -m venv venv
+
+venv\Scripts\activate
+
+python manage.py migrate
+
+python manage.py makemigrations
+
+python manage.py runserver
+
+python manage.py createsuperuser
+
+djangotemplatelanguages
+
+opened_by=models.ForeignKey(Client, on_delete=models.PROTECT,related_name='Usuario')
+    attributed_to=models.ForeignKey(Technical, on_delete=models.PROTECT,related_name='Tecnico')
