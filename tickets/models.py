@@ -17,6 +17,7 @@ class Tickets (models.Model):
         ('ABE', 'Aberto'),
         ('FEC', 'Fechado'),
     ]
+    
     PRIORITY_CHOICES =[
         ('DEF','desconhecido'),
         ('BAX','Baixa'),
@@ -24,6 +25,7 @@ class Tickets (models.Model):
         ('ALT','Alta'),
         ('URG','Urgente'),
         ]
+    
     id = models.AutoField(primary_key=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT,related_name='Categoria')
     opened_by=models.ForeignKey(Client, on_delete=models.PROTECT,related_name='Usuario')

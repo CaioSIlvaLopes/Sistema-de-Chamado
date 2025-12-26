@@ -1,0 +1,558 @@
+{% load static %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    /* --- MESMAS VARIÁVEIS DO DASHBOARD --- */
+    :root {
+        --sidebar-bg: #10243e;
+        --main-bg: #eef2f5;
+        --card-white: #ffffff;
+        --accent-orange: #fca311;
+        --text-grey: #a0a0a0;
+        --status-open: #2ecc71;
+        /* Verde para aberto */
+        --status-high: #e74c3c;
+        /* Vermelho para prioridade alta */
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        background-color: var(--main-bg);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* --- REUTILIZANDO SIDEBAR --- */
+    .sidebar {
+        width: 250px;
+        background-color: var(--sidebar-bg);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        flex-shrink: 0;
+    }
+
+    .profile-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 40px;
+        margin-top: 20px;
+    }
+
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        color: var(--sidebar-bg);
+        font-size: 40px;
+    }
+
+    .profile-name {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .profile-email {
+        font-size: 12px;
+        color: #8da1b9;
+    }
+
+    .nav-menu {
+        list-style: none;
+        width: 100%;
+    }
+
+    .nav-menu li {
+        margin-bottom: 15px;
+    }
+
+    .nav-menu a {
+        text-decoration: none;
+        color: #8da1b9;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-radius: 8px;
+        transition: 0.3s;
+        font-size: 14px;
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a.active {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-menu a i {
+        margin-right: 15px;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* --- CONTEÚDO PRINCIPAL --- */
+    .main-content {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Cabeçalho da página */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .breadcrumb {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .ticket-title {
+        font-size: 24px;
+        color: #333;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .ticket-id {
+        font-size: 16px;
+        color: #888;
+        font-weight: 400;
+    }
+
+    /* Grid do Layout do Chamado */
+    .ticket-grid {
+        display: grid;
+        grid-template-columns: 2.5fr 1fr;
+        /* 70% Chat, 30% Info */
+        gap: 25px;
+    }
+
+    /* Área de Chat / Mensagens */
+    .conversation-area {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .message-card {
+        background: var(--card-white);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        position: relative;
+    }
+
+    /* Estilo visual para diferenciar Cliente vs Suporte */
+    .msg-client {
+        border-left: 4px solid #ccc;
+    }
+
+    .msg-support {
+        border-left: 4px solid var(--sidebar-bg);
+        background-color: #f8fafd;
+    }
+
+    .msg-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .avatar-small {
+        width: 35px;
+        height: 35px;
+        background: #eee;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .support-avatar {
+        background: var(--sidebar-bg);
+        color: white;
+    }
+
+    .user-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .msg-date {
+        font-size: 12px;
+        color: #999;
+    }
+
+    .msg-body {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    /* Área de Resposta */
+    .reply-box {
+        background: var(--card-white);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        margin-top: 10px;
+    }
+
+    .reply-textarea {
+        width: 100%;
+        height: 100px;
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        resize: none;
+        outline: none;
+        font-family: 'Poppins', sans-serif;
+        margin-bottom: 15px;
+        background: #f9f9f9;
+    }
+
+    .reply-textarea:focus {
+        border-color: var(--sidebar-bg);
+        background: white;
+    }
+
+    .reply-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-attach {
+        color: #666;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-attach:hover {
+        color: var(--sidebar-bg);
+    }
+
+    .btn-send {
+        background-color: var(--accent-orange);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .btn-send:hover {
+        background-color: #e09210;
+        transform: translateY(-2px);
+    }
+
+    /* Sidebar Direita (Infos) */
+    .info-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .info-card {
+        background: var(--card-white);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .info-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
+
+    .info-label {
+        color: #888;
+    }
+
+    .info-value {
+        font-weight: 500;
+        color: #333;
+        text-align: right;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 500;
+        color: white;
+    }
+
+    .badge-open {
+        background-color: var(--status-open);
+    }
+
+    .badge-high {
+        background-color: var(--status-high);
+    }
+
+    .action-btn {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #555;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .action-btn:hover {
+        background: #f5f5f5;
+        border-color: #ccc;
+    }
+
+    .btn-close {
+        color: #e74c3c;
+        border-color: #fadbd8;
+    }
+
+    .btn-close:hover {
+        background: #fadbd8;
+    }
+
+    /* Responsividade */
+    @media (max-width: 900px) {
+        .ticket-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+            width: 70px;
+            padding: 10px;
+        }
+
+        .profile-name,
+        .nav-menu span,
+        .ticket-id {
+            display: none;
+        }
+
+        .nav-menu a {
+            justify-content: center;
+        }
+
+        .nav-menu a i {
+            margin: 0;
+        }
+    }
+</style>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="profile-section">
+            <div class="profile-img"><i class="fa-solid fa-user"></i></div>
+            <div class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="{% url 'ticket_reports' %}"><i class="fa-solid fa-house"></i> <span>Relatórios</span></a></li>
+            <li><a href="{% url 'meus_chamados' %}"><i class="fa-solid fa-ticket"></i> <span>Meus Chamados</span></a>
+            </li>
+            <li><a href="{% url 'novo_ticket' %}"><i class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a>
+            </li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
+            <li><a href="{%url 'perfil' %}" ><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <div>
+                <div class="breadcrumb">
+                    Chamados / {{ ticket.category.name }} / #{{ ticket.id }}
+                </div>
+
+                <h2 class="ticket-title">
+                    {{ ticket.category.name }}
+                    <span class="ticket-id">#{{ ticket.id }}</span>
+                </h2>
+            </div>
+
+            <a href="#" style="text-decoration:none; color:#666;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        <div class="ticket-grid">
+
+            <!-- CONVERSAS -->
+            <div class="conversation-area">
+
+                {% for mensagem in mensagens %}
+                <div class="message-card {% if mensagem.autor.is_staff %}msg-support{% else %}msg-client{% endif %}">
+                    <div class="msg-header">
+                        <div class="user-info">
+                            <div class="avatar-small {% if mensagem.autor.is_staff %}support-avatar{% endif %}">
+                                <i
+                                    class="fa-solid {% if mensagem.autor.is_staff %}fa-headset{% else %}fa-user{% endif %}"></i>
+                            </div>
+                            <div>
+                                <div class="user-name">{{ mensagem.autor.get_full_name }}</div>
+                                <div style="font-size:11px; color:#888;">
+                                    {% if mensagem.autor.is_staff %}Agente{% else %}Cliente{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="msg-date">{{ mensagem.criado_em|date:"d M, H:i" }}</div>
+                    </div>
+
+                    <div class="msg-body">
+                        {{ mensagem.texto|linebreaks }}
+                    </div>
+                </div>
+                {% empty %}
+                <p>Nenhuma mensagem ainda.</p>
+                {% endfor %}
+
+                <!-- FORM DE RESPOSTA -->
+                <form method="post" enctype="multipart/form-data" class="reply-box">
+                    {% csrf_token %}
+                    <div style="font-weight:600; margin-bottom:10px;">Adicionar Resposta</div>
+
+                    <textarea name="texto" class="reply-textarea" placeholder="Digite sua resposta..."
+                        required></textarea>
+
+                    <div class="reply-actions">
+                        <label class="btn-attach">
+                            <i class="fa-solid fa-paperclip"></i>
+                            <input type="file" name="anexo" hidden>
+                            Anexar arquivo
+                        </label>
+
+                        <button type="submit" class="btn-send">
+                            Enviar Resposta <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- SIDEBAR INFO -->
+            <div class="info-sidebar">
+
+                <div class="info-card">
+                    <div class="info-title">Detalhes do Chamado</div>
+
+                    <div class="info-row">
+                        <span class="info-label">Status:</span>
+                        <span class="badge badge-open">{{ ticket.get_status_display }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Prioridade:</span>
+                        <span class="badge badge-high">{{ ticket.get_priority_display }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Departamento:</span>
+                        <span class="info-value">{{ client.department }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Categoria:</span>
+                        <span class="info-value">{{ ticket.category}}</span>
+                    </div>
+
+
+                    <div class="info-row">
+                        <span class="info-label">Anexo: </span>
+                        <span class="info-value">
+                            {% if ticket.attachment %}
+                            <a href="{{ ticket.attachment.url }}" target="_blank">Abrir Anexo</a>
+                            {% else %}
+                            Nenhum
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-title">Atribuição</div>
+
+                    <div class="info-row">
+                        <span class="info-label">Técnico:</span>
+                        <span class="info-value">
+                            {{ ticket.tecnico.get_full_name|default:"Não atribuído" }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-title">Ações</div>
+
+                    {% if ticket.status != 'resolvido' %}
+                    <a href="#" class="action-btn btn-close">
+                        <i class="fa-solid fa-check"></i> Marcar como Resolvido
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+    </main>
+
+</body>
+{% endblock %}

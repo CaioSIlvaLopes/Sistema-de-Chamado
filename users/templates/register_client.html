@@ -1,0 +1,205 @@
+{% block content %}
+
+<style>
+    :root {
+        --sidebar-bg: #10243e;
+        --main-bg: #eef2f5;
+        --card-white: #ffffff;
+        --accent-orange: #fca311;
+        --text-grey: #a0a0a0;
+    }
+
+    body {
+        background-color: var(--main-bg);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+    }
+
+    .register-card {
+        background-color: var(--card-white);
+        width: 100%;
+        max-width: 400px;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .form-header-icon {
+        width: 70px;
+        height: 70px;
+        background-color: var(--sidebar-bg);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 20px auto;
+    }
+
+    h2 {
+        color: var(--sidebar-bg);
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    p.subtitle {
+        color: var(--text-grey);
+        font-size: 14px;
+        margin-bottom: 30px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .input-group label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 6px;
+        font-weight: 500;
+        display: block;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-grey);
+        font-size: 14px;
+        pointer-events: none;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+        width: 100%;
+        padding: 12px 15px 12px 40px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        outline: none;
+        font-size: 14px;
+        appearance: none;
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper select:focus {
+        border-color: var(--sidebar-bg);
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(16, 36, 62, 0.1);
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--accent-orange);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn-register:hover {
+        background-color: #e09210;
+    }
+
+    .form-footer {
+        margin-top: 20px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .form-footer a {
+        color: var(--sidebar-bg);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .form-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="register-card">
+    <div class="form-header-icon">
+        <i class="fa-solid fa-user-plus"></i>
+    </div>
+
+    <h2>Criar Conta</h2>
+
+    <form method="post" action="{% url 'register_client' %}">
+        {% csrf_token %}
+
+        <!-- Nome -->
+        <div class="input-group">
+            <label for="name">Nome Completo <span>*</span></label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-user"></i>
+                <input id="name" type="text" name="name" required>
+            </div>
+        </div>
+
+        <!-- Empresa -->
+        <div class="input-group">
+            <label for="enterprise">Empresa <span>*</span></label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-building"></i>
+                <select id="enterprise" name="enterprise" required>
+                    <option value="" disabled selected>Selecione...</option>
+                    {% for enterprise in form.fields.enterprise.queryset %}
+                        <option value="{{ enterprise.id }}">{{ enterprise.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="input-group">
+            <label for="email">E-mail <span>*</span></label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-envelope"></i>
+                <input id="email" type="email" name="email" required>
+            </div>
+        </div>
+
+        <!-- Senha -->
+        <div class="input-group">
+            <label for="password">Senha <span>*</span></label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock"></i>
+                <input id="password" type="password" name="password" required>
+            </div>
+        </div>
+
+        <!-- Confirmar Senha -->
+        <div class="input-group">
+            <label for="password_confirm">Confirme sua senha <span>*</span></label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-lock"></i>
+                <input id="password_confirm" type="password" name="password_confirm" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-register">Cadastrar</button>
+    </form>
+
+    <div class="form-footer">
+        Já tem uma conta?
+        <a href="{% url 'login_client' %}">Fazer Login</a>
+    </div>
+</div>
+
+{% endblock %}

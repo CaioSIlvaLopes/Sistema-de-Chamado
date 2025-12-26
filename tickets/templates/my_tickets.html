@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Chamados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --sidebar-bg: #10243e;
+            --main-bg: #eef2f5;
+            --card-white: #ffffff;
+            --accent-orange: #fca311;
+            --accent-blue: #14213d;
+            --text-grey: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            color: var(--sidebar-bg);
+            font-size: 40px;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .profile-email {
+            font-size: 12px;
+            color: #8da1b9;
+        }
+
+        .nav-menu {
+            list-style: none;
+            width: 100%;
+        }
+
+        .nav-menu li {
+            margin-bottom: 15px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #8da1b9;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-menu a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        header h2 {
+            color: #333;
+            font-weight: 400;
+
+        }
+
+        /* --- Tabela de Chamados --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--sidebar-bg);
+            color: white;
+        }
+
+        tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        a.view-btn {
+            background: var(--accent-orange);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        a.view-btn:hover {
+            background: #e09210;
+        }
+
+        /* Responsividade */
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px;
+                padding: 10px;
+            }
+
+            .profile-name,
+            .profile-email,
+            .nav-menu span {
+                display: none;
+            }
+
+            .nav-menu a {
+                justify-content: center;
+            }
+
+            .nav-menu a i {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="profile-section">
+            <div class="profile-img"><i class="fa-solid fa-user"></i></div>
+            <div class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="{% url 'ticket_reports' %}"><i class="fa-solid fa-house"></i> <span>Relatórios</span></a></li>
+            <li><a href="{% url 'meus_chamados' %}"class="active"><i class="fa-solid fa-ticket"></i> <span>Meus Chamados</span></a>
+            </li>
+            <li><a href="{% url 'novo_ticket' %}"><i class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a>
+            </li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
+            <li><a href="{%url 'perfil' %}" ><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h2>Meus Chamados</h2>
+            <i class="fa-solid fa-bars" style="font-size: 20px; cursor: pointer;"></i>
+        </header>
+
+        {% if chamados %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Status</th>
+                    <th>Prioridade</th>
+                    <th>Abertura</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in chamados %}
+                <tr>
+                    <td>{{ ticket.id }}</td>
+                    <td>{{ ticket.description|truncatechars:50 }}</td>
+                    <td>{{ ticket.category.name }}</td>
+                    <td>{{ ticket.get_status_display }}</td>
+                    <td>{{ ticket.get_priority_display }}</td>
+                    <td>{{ ticket.opening_date|date:"d/m/Y H:i" }}</td>
+                    <td><a href="{% url 'detail_chamado' ticket.id %}" class="view-btn">Ver</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Você ainda não abriu nenhum chamado.</p>
+        {% endif %}
+
+    </main>
+
+</body>
+
+</html>
