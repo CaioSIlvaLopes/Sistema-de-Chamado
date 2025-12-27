@@ -5,8 +5,11 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 
 from django.shortcuts import render, redirect
-from .models import Client, Enterprise
+from .models import Client
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
+from tickets.models import Tickets
 
 def login_client(request):
     error = None
@@ -51,3 +54,14 @@ def register_client(request):
 
     return render(request, 'register_client.html', )
 
+@login_required
+def profile(request):
+    # Supondo que Client tenha um campo 'login' que é igual ao username do usuário
+    client_id = request.session.get("client_id")
+    client = Client.objects.get(id=client_id)
+    chamados_abertos = Tickets.objects.filter(opened_by=client, status__in=['SEM','ABE'])
+    context = {
+        'client': client, 
+        'chamados_abertos': chamados_abertos,
+    }
+    return render(request, 'profile.html', context)

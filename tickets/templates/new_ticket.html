@@ -200,6 +200,10 @@
             background: var(--input-bg);
             text-align: center;
             position: relative;
+            cursor: pointer;
+        }
+        .file-upload-wrapper:hover{
+            background-color: #c9c7c7;
         }
 
         .file-upload-wrapper input {
@@ -208,6 +212,21 @@
             opacity: 0;
             cursor: pointer;
         }
+
+        .file-upload-wrapper.file-selected {
+            border-color: #4caf50;
+        }
+
+        .remove-file {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
 
         .form-actions {
             display: flex;
@@ -251,17 +270,18 @@
     <aside class="sidebar">
         <div class="profile-section">
             <div class="profile-img"><i class="fa-solid fa-user"></i></div>
-            <div class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="profile-name">{{ client.name|default:"username" }}</div>
         </div>
 
         <ul class="nav-menu">
             <li><a href="{% url 'ticket_reports' %}"><i class="fa-solid fa-house"></i> <span>Relatórios</span></a></li>
             <li><a href="{% url 'meus_chamados' %}"><i class="fa-solid fa-ticket"></i> <span>Meus Chamados</span></a>
             </li>
-            <li><a href="{% url 'novo_ticket' %}"class="active"><i class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a>
+            <li><a href="{% url 'novo_ticket' %}" class="active"><i class="fa-solid fa-plus-circle"></i> <span>Novo
+                        Chamado</span></a>
             </li>
             <li><a href="#"><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
-            <li><a href="{%url 'perfil' %}" ><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+            <li><a href="{%url 'perfil' %}"><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
         </ul>
     </aside>
     <main class="main-content">
@@ -313,12 +333,19 @@
                 <!-- Anexo -->
                 <div class="input-group">
                     <label>Anexo</label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" name="attachment">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <p>Clique ou arraste um arquivo</p>
+
+                    <div class="file-upload-wrapper" id="uploadWrapper">
+                        <input type="file" name="attachment" id="attachmentInput" hidden>
+
+                        <i class="fa-solid fa-cloud-arrow-up" id="uploadIcon"></i>
+                        <p id="uploadText">Clique ou arraste um arquivo</p>
+
+                        <button type="button" class="remove-file" id="removeFileBtn" hidden>
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                 </div>
+
 
                 <div class="form-actions">
                     <a href="javascript:history.back()" class="btn-cancel">Cancelar</a>
@@ -333,5 +360,32 @@
     </main>
 
 </body>
+<script>
+    const input = document.getElementById("attachmentInput");
+    const wrapper = document.getElementById("uploadWrapper");
+    const text = document.getElementById("uploadText");
+    const removeBtn = document.getElementById("removeFileBtn");
+
+    // Abrir seletor ao clicar na área
+    wrapper.addEventListener("click", () => input.click());
+
+    // Quando escolher arquivo
+    input.addEventListener("change", () => {
+        if (input.files.length > 0) {
+            text.textContent = input.files[0].name;
+            wrapper.classList.add("file-selected");
+            removeBtn.hidden = false;
+        }
+    });
+
+    // Remover arquivo
+    removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // não abre o seletor
+        input.value = "";    // remove o arquivo
+        text.textContent = "Clique ou arraste um arquivo";
+        wrapper.classList.remove("file-selected");
+        removeBtn.hidden = true;
+    });
+</script>
 
 </html>

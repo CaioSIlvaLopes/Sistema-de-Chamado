@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chamado Aberto com Sucesso!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- VARIÁVEIS (Identidade Visual) --- */
+        :root {
+            --sidebar-bg: #10243e;
+            --main-bg: #eef2f5;
+            --card-white: #ffffff;
+            --accent-orange: #fca311;
+            --success-green: #2ecc71;
+            /* Verde para sucesso */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Card Centralizado */
+        .success-card {
+            background-color: var(--card-white);
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideUp 0.5s ease-out;
+            /* Animação de entrada */
+        }
+
+        /* Animação do Card subindo suavemente */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Círculo do Ícone com Animação */
+        .icon-circle {
+            width: 100px;
+            height: 100px;
+            background-color: rgba(46, 204, 113, 0.1);
+            /* Verde bem clarinho */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .icon-circle i {
+            color: var(--success-green);
+            font-size: 40px;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            /* Efeito de "Pulo" */
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        h2 {
+            color: var(--sidebar-bg);
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .ticket-id {
+            background-color: #f0f4f8;
+            color: var(--sidebar-bg);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 15px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        /* Botões */
+        .btn-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-orange);
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(252, 163, 17, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #e09210;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-secondary:hover {
+            color: var(--sidebar-bg);
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="success-card">
+        <div class="icon-circle">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h2>Chamado Registrado!</h2>
+
+        <p>
+            Sua solicitação foi enviada para nossa equipe.<br>
+            O número do seu protocolo é:
+        </p>
+
+        <div class="ticket-id">
+            #{{ticket.id|default:"2025-001" }}
+        </div>
+
+        <p style="font-size: 12px; color: #999; margin-top: 10px;">
+            Você receberá atualizações no seu e-mail.
+        </p>
+
+        <div class="btn-group">
+            <a href="{% url 'meus_chamados' %}" class="btn-primary">
+                Ver Meus Chamados
+            </a>
+        </div>
+    </div>
+
+</body>
+
+</html>
