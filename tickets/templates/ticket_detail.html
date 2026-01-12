@@ -343,6 +343,10 @@
         background-color: var(--status-high);
     }
 
+    .badge-info {
+        background-color: #3498db;
+    }
+
     .action-btn {
         width: 100%;
         padding: 10px;
@@ -402,93 +406,235 @@
 
 <body>
 
-    <aside class="sidebar">
-        <div class="profile-section">
-            <div class="profile-img"><i class="fa-solid fa-user"></i></div>
-            <div class="profile-name">{{ client.name|default:"username" }}</div>
-        </div>
-
-        <ul class="nav-menu">
-            <li><a href="{% url 'ticket_reports' %}"><i class="fa-solid fa-house"></i> <span>Relatórios</span></a></li>
-            <li><a href="{% url 'meus_chamados' %}"><i class="fa-solid fa-ticket"></i> <span>Meus Chamados</span></a>
-            </li>
-            <li><a href="{% url 'novo_ticket' %}"><i class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a>
-            </li>
-            <li><a href="#"><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
-            <li><a href="{%url 'perfil' %}" ><i class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
-        </ul>
-    </aside>
+    {% include 'partials/sidebar.html' %}
 
     <main class="main-content">
 
         <div class="page-header">
             <div>
                 <div class="breadcrumb">
-                    Chamados / {{ ticket.category.name }} / #{{ ticket.id }}
+                    {% if is_tech %}
+                    <a href="{% url 'dashboard_technical' %}" style="color:#666; text-decoration:none;">Painel</a> /
+                    {% else %}
+                    <a href="{% url 'meus_chamados' %}" style="color:#666; text-decoration:none;">Meus Chamados</a> /
+                    {% endif %}
+                    Chamados / #{{ ticket.id }}
                 </div>
 
                 <h2 class="ticket-title">
-                    {{ ticket.category.name }}
+                    {{ ticket.description|truncatechars:30 }}
                     <span class="ticket-id">#{{ ticket.id }}</span>
                 </h2>
             </div>
 
-            <a href="#" style="text-decoration:none; color:#666;">
+            <a href="{% if is_tech %}{% url 'dashboard_technical' %}{% else %}{% url 'meus_chamados' %}{% endif %}"
+                style="text-decoration:none; color:#666;">
                 <i class="fa-solid fa-arrow-left"></i> Voltar
             </a>
         </div>
 
         <div class="ticket-grid">
 
-            <!-- CONVERSAS -->
+            <!-- DETALHES -->
             <div class="conversation-area">
 
-                {% for mensagem in mensagens %}
-                <div class="message-card {% if mensagem.autor.is_staff %}msg-support{% else %}msg-client{% endif %}">
+                <!-- DESCRIÇÃO INICIAL -->
+                <div class="message-card msg-client">
                     <div class="msg-header">
                         <div class="user-info">
-                            <div class="avatar-small {% if mensagem.autor.is_staff %}support-avatar{% endif %}">
-                                <i
-                                    class="fa-solid {% if mensagem.autor.is_staff %}fa-headset{% else %}fa-user{% endif %}"></i>
+                            <div class="avatar-small">
+                                <i class="fa-solid fa-user"></i>
                             </div>
                             <div>
-                                <div class="user-name">{{ mensagem.autor.get_full_name }}</div>
-                                <div style="font-size:11px; color:#888;">
-                                    {% if mensagem.autor.is_staff %}Agente{% else %}Cliente{% endif %}
+                                <div class="user-name">{{ opened_by.display_name|default:ticket.opened_by.username }}
                                 </div>
+                                <div style="font-size:11px; color:#888;">Cliente</div>
                             </div>
                         </div>
-                        <div class="msg-date">{{ mensagem.criado_em|date:"d M, H:i" }}</div>
+                        <div class="msg-date">{{ ticket.opening_date|date:"d M Y, H:i" }}</div>
                     </div>
 
                     <div class="msg-body">
-                        {{ mensagem.texto|linebreaks }}
+                        <strong>Descrição:</strong><br>
+                        {{ ticket.description|linebreaks }}
                     </div>
                 </div>
-                {% empty %}
-                <p>Nenhuma mensagem ainda.</p>
-                {% endfor %}
 
-                <!-- FORM DE RESPOSTA -->
-                <form method="post" enctype="multipart/form-data" class="reply-box">
-                    {% csrf_token %}
-                    <div style="font-weight:600; margin-bottom:10px;">Adicionar Resposta</div>
+                <!-- Chat History Container -->
+                <div id="chat-history" class="conversation-area" style="margin-top:0;">
+                    <!-- Messages will be loaded here -->
+                </div>
 
-                    <textarea name="texto" class="reply-textarea" placeholder="Digite sua resposta..."
-                        required></textarea>
+                <!-- Reply Area -->
+                {% if ticket.status != 'FEC' %}
+                <div class="reply-box">
+                    <form id="chat-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <textarea name="message" class="reply-textarea"
+                            placeholder="Digite sua mensagem aqui..."></textarea>
+                        <div class="reply-actions">
+                            <div>
+                                <input type="file" name="attachment" id="chat-attachment" style="display:none;"
+                                    accept="image/*" onchange="updateFileName(this)">
+                                <label for="chat-attachment" class="btn-attach">
+                                    <i class="fa-solid fa-paperclip"></i> <span id="file-name">Anexar imagem (max
+                                        12MB)</span>
+                                </label>
+                            </div>
+                            <button type="button" class="btn-send" onclick="sendChatMessage()">
+                                <i class="fa-solid fa-paper-plane"></i> Enviar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="message-card" style="text-align:center; color:#888;">
+                    <em><i class="fa-solid fa-lock"></i> Este chamado foi finalizado. O chat está encerrado.</em>
+                </div>
+                {% endif %}
 
-                    <div class="reply-actions">
-                        <label class="btn-attach">
-                            <i class="fa-solid fa-paperclip"></i>
-                            <input type="file" name="anexo" hidden>
-                            Anexar arquivo
-                        </label>
+                <script>
+                    const ticketId = {{ ticket.id }};
+                    const chatHistory = document.getElementById('chat-history');
+                    // Store the last known number of messages to avoid unnecessary re-renders (simple version)
+                    let lastMsgCount = -1;
 
-                        <button type="submit" class="btn-send">
-                            Enviar Resposta <i class="fa-solid fa-paper-plane"></i>
-                        </button>
+                    function updateFileName(input) {
+                        const span = document.getElementById('file-name');
+                        if (input.files && input.files[0]) {
+                            const file = input.files[0];
+                            span.textContent = file.name;
+                            if (file.size > 12 * 1024 * 1024) {
+                                alert("O arquivo é muito grande! O limite é de 12MB.");
+                                input.value = "";
+                                span.textContent = "Anexar imagem (max 12MB)";
+                            }
+                        } else {
+                            span.textContent = "Anexar imagem (max 12MB)";
+                        }
+                    }
+
+                    async function loadMessages() {
+                        try {
+                            const response = await fetch(`chat/get/`);
+                            if (!response.ok) return;
+                            const data = await response.json();
+
+                            // Should we re-render?
+                            if (data.messages.length !== lastMsgCount) {
+                                renderMessages(data.messages);
+                                lastMsgCount = data.messages.length;
+                            }
+
+                        } catch (e) {
+                            console.error("Erro ao carregar mensagens:", e);
+                        }
+                    }
+
+                    function renderMessages(messages) {
+                        chatHistory.innerHTML = '';
+
+                        messages.forEach(msg => {
+                            // Determine styling based on sender type
+                            // Based on existing CSS: Technical/Support = msg-support (blue/sidebar color key), Client = msg-client (grey)
+                            // Function logic: if sender name has "(Técnico)", it's support style? Or simpler: if msg.is_me and I am tech?
+                            // Let's rely on the string we prepared in backend or just consistent standard.
+                            // Let's use:
+                            // - msg-support: for messages from technicians
+                            // - msg-client: for messages from clients
+
+                            // Check if sender string contains (Técnico) - brittle but effective given previous view logic
+                            const isSupport = msg.sender.includes('(Técnico)');
+                            const styleClass = isSupport ? 'msg-support' : 'msg-client';
+                            const avatarClass = isSupport ? 'support-avatar' : '';
+
+                            let attachmentHtml = '';
+                            if (msg.attachment_url) {
+                                attachmentHtml = `
+                    <div style="margin-top:10px;">
+                        <a href="${msg.attachment_url}" target="_blank">
+                            <img src="${msg.attachment_url}" style="max-height:200px; width:auto; border-radius:8px; border:1px solid #ddd;">
+                        </a>
+                    </div>`;
+                            }
+
+                            const messageText = msg.message ? msg.message.replace(/\n/g, '<br>') : '';
+
+                            const html = `
+            <div class="message-card ${styleClass}">
+                <div class="msg-header">
+                    <div class="user-info">
+                        <div class="avatar-small ${avatarClass}">
+                            <i class="fa-solid fa-user${isSupport ? '-tie' : ''}"></i>
+                        </div>
+                        <div>
+                            <div class="user-name">${msg.sender}</div>
+                            <div style="font-size:11px; color:#888;">${isSupport ? 'Técnico' : 'Cliente'}</div>
+                        </div>
                     </div>
-                </form>
+                    <div class="msg-date">${msg.timestamp}</div>
+                </div>
+                <div class="msg-body">
+                    ${messageText}
+                    ${attachmentHtml}
+                </div>
+            </div>`;
+
+                            chatHistory.insertAdjacentHTML('beforeend', html);
+                        });
+                    }
+
+                    async function sendChatMessage() {
+                        const form = document.getElementById('chat-form');
+                        const formData = new FormData(form);
+
+                        // Basic validation
+                        const msg = formData.get('message').trim();
+                        const file = formData.get('attachment');
+                        if (!msg && (!file || file.size === 0)) {
+                            return;
+                        }
+
+                        const btn = document.querySelector('.btn-send');
+                        const originalText = btn.innerHTML;
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+                        try {
+                            // Need CSRF token for fetch POST if not in form
+                            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                            const response = await fetch(`chat/send/`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': csrftoken
+                                }
+                            });
+                            const data = await response.json();
+
+                            if (data.status === 'ok') {
+                                document.querySelector('.reply-textarea').value = '';
+                                document.getElementById('chat-attachment').value = '';
+                                document.getElementById('file-name').textContent = "Anexar imagem (max 12MB)";
+                                lastMsgCount = -1; // Force reload
+                                loadMessages();
+                            } else {
+                                alert('Erro ao enviar: ' + (data.error || 'Desconhecido'));
+                            }
+                        } catch (e) {
+                            alert('Erro de conexão ao enviar mensagem.');
+                            console.error(e);
+                        } finally {
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        }
+                    }
+
+                    // Load immediately and then poll
+                    loadMessages();
+                    setInterval(loadMessages, 3000); 
+                </script>
 
             </div>
 
@@ -500,22 +646,26 @@
 
                     <div class="info-row">
                         <span class="info-label">Status:</span>
-                        <span class="badge badge-open">{{ ticket.get_status_display }}</span>
+                        {% if ticket.status == 'SEM' %}<span class="badge"
+                            style="background:#eee; color:#777;">Pendente</span>
+                        {% elif ticket.status == 'ABE' %}<span class="badge badge-open">Em Andamento</span>
+                        {% elif ticket.status == 'FEC' %}<span class="badge"
+                            style="background:#d4edda; color:#155724;">Finalizado</span>
+                        {% endif %}
                     </div>
 
                     <div class="info-row">
                         <span class="info-label">Prioridade:</span>
-                        <span class="badge badge-high">{{ ticket.get_priority_display }}</span>
+                        <span
+                            class="badge {% if ticket.priority == 'URG' or ticket.priority == 'ALT' %}badge-high{% elif ticket.priority == 'BAX' or ticket.priority == 'MED' or ticket.priority == 'DEF' %}badge-info{% else %}badge-open{% endif %}">
+                            {{ ticket.get_priority_display }} </span>
                     </div>
 
-                    <div class="info-row">
-                        <span class="info-label">Departamento:</span>
-                        <span class="info-value">{{ client.department }}</span>
-                    </div>
+                    <!-- Deparment removed as per new model -->
 
                     <div class="info-row">
                         <span class="info-label">Categoria:</span>
-                        <span class="info-value">{{ ticket.category}}</span>
+                        <span class="info-value">{{ ticket.category.name }}</span>
                     </div>
 
 
@@ -523,36 +673,62 @@
                         <span class="info-label">Anexo: </span>
                         <span class="info-value">
                             {% if ticket.attachment %}
-                            <a href="{{ ticket.attachment.url }}" target="_blank">Abrir Anexo</a>
+                            <a href="{{ ticket.attachment.url }}" target="_blank" style="color:var(--accent-orange);">
+                                <i class="fa-solid fa-paperclip"></i> Visualizar
+                            </a>
                             {% else %}
-                            Nenhum
+                            <span style="color:#ccc;">Nenhum</span>
                             {% endif %}
                         </span>
                     </div>
                 </div>
+
                 <div class="info-card">
                     <div class="info-title">Atribuição</div>
 
                     <div class="info-row">
                         <span class="info-label">Técnico:</span>
                         <span class="info-value">
-                            {{ ticket.tecnico.get_full_name|default:"Não atribuído" }}
+                            {% if is_tech and ticket.attributed_to.id != tech.id and ticket.attributed_to %}
+                            <div style="text-align:center; font-size:12px; color:#888;">
+                                Este chamado está com outro técnico.
+                            </div>
+                            {% endif %}
+                            {% if ticket.attributed_to %}
+                            {{ ticket.attributed_to.display_name|default:ticket.attributed_to.username }}
+                            {% else %}
+                            <span style="color:#ccc;">-- Pendente --</span>
+                            {% endif %}
                         </span>
                     </div>
                 </div>
 
+                <!-- Ações para Técnico -->
+                {% if is_tech %}
                 <div class="info-card">
-                    <div class="info-title">Ações</div>
+                    <div class="info-title">Ações do Técnico</div>
 
-                    {% if ticket.status != 'resolvido' %}
-                    <a href="#" class="action-btn btn-close">
-                        <i class="fa-solid fa-check"></i> Marcar como Resolvido
+                    {% if not ticket.attributed_to and ticket.status != 'FEC' %}
+                    <a href="{% url 'ticket_action' ticket.id 'receive' %}" class="action-btn"
+                        style="color:#2ecc71; border-color:#2ecc71;">
+                        <i class="fa-solid fa-hand-holding-hand"></i> Assumir Chamado
                     </a>
                     {% endif %}
+
+                    {% if ticket.attributed_to.id == tech.id and ticket.status != 'FEC' %}
+                    <a href="{% url 'ticket_action' ticket.id 'finalize' %}" class="action-btn btn-close">
+                        <i class="fa-solid fa-check"></i> Finalizar Chamado
+                    </a>
+                    {% endif %}
+
+                    {% if ticket.attributed_to.id != tech.id and ticket.attributed_to %}
+                    <div style="text-align:center; font-size:12px; color:#888;">
+                        Este chamado está com outro técnico.
+                    </div>
+                    {% endif %}
                 </div>
+                {% endif %}
             </div>
-
     </main>
-
 </body>
 {% endblock %}

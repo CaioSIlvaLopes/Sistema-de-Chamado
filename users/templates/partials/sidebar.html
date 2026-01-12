@@ -1,0 +1,42 @@
+<aside class="sidebar">
+    <div class="profile-section">
+        <div class="profile-img">
+            {% if request.user.is_technician %}
+            <i class="fa-solid fa-headset"></i>
+            {% else %}
+            <i class="fa-solid fa-user"></i>
+            {% endif %}
+        </div>
+        <div class="profile-name">
+            {{ request.user.display_name|default:request.user.username }}
+        </div>
+        {% if request.user.is_technician %}
+        <div style="font-size: 12px; color: #8da1b9;">Técnico</div>
+        {% endif %}
+    </div>
+
+    <ul class="nav-menu">
+        {% if request.user.is_technician %}
+        <li><a href="{% url 'dashboard_technical' %}"
+                class="{% if request.resolver_match.url_name == 'dashboard_technical' %}active{% endif %}"><i
+                    class="fa-solid fa-house"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'perfil' %}"
+                class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}"><i
+                    class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+        {% else %}
+        <li><a href="{% url 'ticket_reports' %}"
+                class="{% if request.resolver_match.url_name == 'ticket_reports' %}active{% endif %}"><i
+                    class="fa-solid fa-house"></i> <span>Relatórios</span></a></li>
+        <li><a href="{% url 'meus_chamados' %}"
+                class="{% if request.resolver_match.url_name == 'meus_chamados' or request.resolver_match.url_name == 'detail_chamado' %}active{% endif %}"><i
+                    class="fa-solid fa-ticket"></i> <span>Meus Chamados</span></a></li>
+        <li><a href="{% url 'novo_ticket' %}"
+                class="{% if request.resolver_match.url_name == 'novo_ticket' %}active{% endif %}"><i
+                    class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a></li>
+        <li><a href="#" class=""><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
+        <li><a href="{% url 'perfil' %}"
+                class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}"><i
+                    class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
+        {% endif %}
+    </ul>
+</aside>

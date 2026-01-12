@@ -1,30 +1,42 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 
 class Enterprise(models.Model):
-    id=models.AutoField(primary_key=True)
-    name=models.CharField(max_length=200, null=False,blank=False)
-    cnpj=models.CharField(max_length=14, null=False,blank=False)
+    # O Django cria o ID automaticamente
+    name = models.CharField(max_length=200)
+    cnpj = models.CharField(max_length=14, unique=True) # unique garante que não duplique
 
     def __str__(self):
         return self.name
-    
-class Client(models.Model):
-    id=models.AutoField(primary_key=True)
-    name=models.CharField(max_length=100, blank=False,null=False)
-    enterprise=models.ForeignKey(Enterprise,on_delete=models.PROTECT,related_name='Empresa')
-    department=models.CharField(max_length=100, blank=False,null=False)
-    login = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=128) 
-    def __str__(self):
-        return self.name
-    
-class Technical(models.Model):
-    id=models.AutoField(primary_key=True)
-    name=models.CharField(max_length=100, blank=False,null=False)
-    number=models.CharField(max_length=20, blank=True,null=True)
-    
-    def __str__(self):
-        return self.name
-    
 
+class Account(AbstractUser):
+    # Removemos o campo 'password' (O AbstractUser já cuida disso com segurança)
+    # Removemos o campo 'id' (O Django cria automaticamente)
+    
+    # Campo opcional (null=True, blank=True)
+    # Isso permite que o Super Admin exista sem ter uma empresa vinculada
+    enterprise = models.ForeignKey(
+        Enterprise, 
+        on_delete=models.PROTECT, 
+        related_name='accounts', 
+        verbose_name='Empresa',
+        null=True,  
+        blank=True
+    )
+
+    IS_TECH_CHOICES = (
+        (False, 'Usuário'),
+        (True, 'Técnico'),
+    )
+    is_technician = models.BooleanField(
+        default=False, 
+        verbose_name="É técnico?", 
+        choices=IS_TECH_CHOICES
+    )
+
+    # O campo 'name' no seu código original é redundante, pois o AbstractUser
+    # já tem 'first_name' e 'last_name'. Mas se quiser um nome de exibição único:
+    display_name = models.CharField(max_length=200, verbose_name="Nome Completo", blank=True)
+
+    def __str__(self):
+        return self.username

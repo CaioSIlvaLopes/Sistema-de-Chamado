@@ -1,27 +1,28 @@
 from django.contrib import admin
-from users.models import Technical
-from users.models import Client
-from users.models import Enterprise
+from django.contrib.auth.admin import UserAdmin
+from .models import Account, Enterprise
 
-class TechnicalAdmin(admin.ModelAdmin):
-    list_display=('id','name','number')
-    search_fields=('id','name')
+# Registra a empresa de forma simples
+admin.site.register(Enterprise)
 
-admin.site.register(Technical, TechnicalAdmin)
-
-
-class ClientAdmin(admin.ModelAdmin):
-    list_display=('id','name','department','enterprise')
-    search_fields=('id','name','department')
+# Configura o Account usando o UserAdmin padrão do Django como base
+@admin.register(Account)
+class AccountAdmin(UserAdmin):
+    # Colunas que aparecem na lista de usuários (CORREÇÃO AQUI: removemos 'name')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'enterprise', 'is_technician', 'is_staff')
     
-
-admin.site.register(Client, ClientAdmin)
-
-
-
-class EnterpriseAdmin(admin.ModelAdmin):
-    list_display=('id','name','cnpj')
-    search_fields=('id','name','cnpj')
+    # Filtros laterais
+    list_filter = ('is_technician', 'enterprise', 'is_staff', 'is_superuser', 'groups')
     
+    # Campos de busca
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'enterprise__name')
 
-admin.site.register(Enterprise, EnterpriseAdmin)
+    # Configuração do formulário de EDIÇÃO de usuário (dentro do admin)
+    fieldsets = UserAdmin.fieldsets + (
+        ('Informações Adicionais', {'fields': ('enterprise', 'is_technician')}),
+    )
+
+    # Configuração do formulário de CRIAÇÃO de usuário (dentro do admin)
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Informações Adicionais', {'fields': ('enterprise', 'is_technician')}),
+    )

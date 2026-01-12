@@ -1,6 +1,7 @@
 from django.contrib import admin
 from tickets.models import Tickets
 from tickets.models import Category
+from tickets.models import ChatMessage
 
 class TicketsAdmin(admin.ModelAdmin):
     list_display=('id','category','status','priority','opened_by','attributed_to','description','opening_date','updated_date','closing_date','attachment','comments')
@@ -14,3 +15,10 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields=('id','name')
 
 admin.site.register(Category, CategoryAdmin)
+
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display=('id','ticket','sender','message','attachment','timestamp')
+    search_fields=('id','ticket','sender','message','attachment','timestamp')
+    list_filter = ('ticket','sender','message','attachment','timestamp',)
+
+admin.site.register(ChatMessage, ChatMessageAdmin)
