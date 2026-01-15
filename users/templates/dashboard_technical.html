@@ -8,6 +8,8 @@
     <title>Painel do Técnico - Infomundi</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
     <style>
         :root {
             --sidebar-bg: #10243e;
@@ -31,75 +33,6 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background-color: var(--sidebar-bg);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            flex-shrink: 0;
-        }
-
-        .profile-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 40px;
-            margin-top: 20px;
-        }
-
-        .profile-img {
-            width: 80px;
-            height: 80px;
-            background-color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            color: var(--sidebar-bg);
-            font-size: 40px;
-        }
-
-        .profile-name {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .nav-menu {
-            list-style: none;
-            width: 100%;
-        }
-
-        .nav-menu li {
-            margin-bottom: 15px;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: #8da1b9;
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-size: 14px;
-        }
-
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-menu a i {
-            margin-right: 15px;
-            width: 20px;
-            text-align: center;
         }
 
         /* Main Content */
@@ -255,7 +188,11 @@
     {% include 'partials/sidebar.html' %}
 
     <main class="main-content">
-        <h2 class="page-title">Painel de Controle</h2>
+        <h2 class="page-title">
+            <i class="fa-solid fa-bars mobile-menu-toggle"
+                style="display: none; cursor: pointer; margin-right: 15px;"></i>
+            Painel de Controle
+        </h2>
 
         <!-- Simple Stats (Optional, hardcoded logic or passed from view if calculated) -->
         <div class="stats-grid">

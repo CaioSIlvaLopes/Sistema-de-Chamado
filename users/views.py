@@ -29,11 +29,14 @@ def logout_view(request):
     return redirect('login_client')
 
 
+
+
+
 def register(request):
     if request.method == 'POST':
         form = AccountRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
             messages.success(request, 'Conta criada com sucesso! Faça login.')
             return redirect('login_client')
     else:

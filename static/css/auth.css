@@ -43,6 +43,8 @@ body {
     padding: 40px 0;
 }
 
+
+
 /* --- DYNAMIC BACKGROUND --- */
 body::before {
     content: '';

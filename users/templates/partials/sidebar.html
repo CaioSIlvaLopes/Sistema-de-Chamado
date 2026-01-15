@@ -1,4 +1,5 @@
 <aside class="sidebar">
+    <button class="sidebar-close-btn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
     <div class="profile-section">
         <div class="profile-img">
             {% if request.user.is_technician %}
@@ -20,6 +21,9 @@
         <li><a href="{% url 'dashboard_technical' %}"
                 class="{% if request.resolver_match.url_name == 'dashboard_technical' %}active{% endif %}"><i
                     class="fa-solid fa-house"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'notifications' %}"
+                class="{% if request.resolver_match.url_name == 'notifications' %}active{% endif %}"><i
+                    class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
         <li><a href="{% url 'perfil' %}"
                 class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}"><i
                     class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
@@ -33,7 +37,9 @@
         <li><a href="{% url 'novo_ticket' %}"
                 class="{% if request.resolver_match.url_name == 'novo_ticket' %}active{% endif %}"><i
                     class="fa-solid fa-plus-circle"></i> <span>Novo Chamado</span></a></li>
-        <li><a href="#" class=""><i class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
+        <li><a href="{% url 'notifications' %}"
+                class="{% if request.resolver_match.url_name == 'notifications' %}active{% endif %}"><i
+                    class="fa-solid fa-bell"></i> <span>Notificações</span></a></li>
         <li><a href="{% url 'perfil' %}"
                 class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}"><i
                     class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>

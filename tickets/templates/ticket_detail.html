@@ -1,408 +1,22 @@
 {% load static %}
 {% block content %}
 
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
+</head>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-    /* --- MESMAS VARIÁVEIS DO DASHBOARD --- */
-    :root {
-        --sidebar-bg: #10243e;
-        --main-bg: #eef2f5;
-        --card-white: #ffffff;
-        --accent-orange: #fca311;
-        --text-grey: #a0a0a0;
-        --status-open: #2ecc71;
-        /* Verde para aberto */
-        --status-high: #e74c3c;
-        /* Vermelho para prioridade alta */
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-        background-color: var(--main-bg);
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    /* --- REUTILIZANDO SIDEBAR --- */
-    .sidebar {
-        width: 250px;
-        background-color: var(--sidebar-bg);
-        color: white;
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        flex-shrink: 0;
-    }
-
-    .profile-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 40px;
-        margin-top: 20px;
-    }
-
-    .profile-img {
-        width: 80px;
-        height: 80px;
-        background-color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 10px;
-        color: var(--sidebar-bg);
-        font-size: 40px;
-    }
-
-    .profile-name {
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    .profile-email {
-        font-size: 12px;
-        color: #8da1b9;
-    }
-
-    .nav-menu {
-        list-style: none;
-        width: 100%;
-    }
-
-    .nav-menu li {
-        margin-bottom: 15px;
-    }
-
-    .nav-menu a {
-        text-decoration: none;
-        color: #8da1b9;
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        border-radius: 8px;
-        transition: 0.3s;
-        font-size: 14px;
-    }
-
-    .nav-menu a:hover,
-    .nav-menu a.active {
-        color: white;
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-menu a i {
-        margin-right: 15px;
-        width: 20px;
-        text-align: center;
-    }
-
-    /* --- CONTEÚDO PRINCIPAL --- */
-    .main-content {
-        flex: 1;
-        padding: 30px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Cabeçalho da página */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-    }
-
-    .breadcrumb {
-        font-size: 12px;
-        color: #666;
-        margin-bottom: 5px;
-    }
-
-    .ticket-title {
-        font-size: 24px;
-        color: #333;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .ticket-id {
-        font-size: 16px;
-        color: #888;
-        font-weight: 400;
-    }
-
-    /* Grid do Layout do Chamado */
-    .ticket-grid {
-        display: grid;
-        grid-template-columns: 2.5fr 1fr;
-        /* 70% Chat, 30% Info */
-        gap: 25px;
-    }
-
-    /* Área de Chat / Mensagens */
-    .conversation-area {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .message-card {
-        background: var(--card-white);
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-        position: relative;
-    }
-
-    /* Estilo visual para diferenciar Cliente vs Suporte */
-    .msg-client {
-        border-left: 4px solid #ccc;
-    }
-
-    .msg-support {
-        border-left: 4px solid var(--sidebar-bg);
-        background-color: #f8fafd;
-    }
-
-    .msg-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 15px;
-        align-items: center;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .avatar-small {
-        width: 35px;
-        height: 35px;
-        background: #eee;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        color: #555;
-    }
-
-    .support-avatar {
-        background: var(--sidebar-bg);
-        color: white;
-    }
-
-    .user-name {
-        font-weight: 600;
-        font-size: 14px;
-        color: #333;
-    }
-
-    .msg-date {
-        font-size: 12px;
-        color: #999;
-    }
-
-    .msg-body {
-        font-size: 14px;
-        color: #555;
-        line-height: 1.6;
-    }
-
-    /* Área de Resposta */
-    .reply-box {
-        background: var(--card-white);
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        margin-top: 10px;
-    }
-
-    .reply-textarea {
-        width: 100%;
-        height: 100px;
-        padding: 15px;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        resize: none;
-        outline: none;
-        font-family: 'Poppins', sans-serif;
-        margin-bottom: 15px;
-        background: #f9f9f9;
-    }
-
-    .reply-textarea:focus {
-        border-color: var(--sidebar-bg);
-        background: white;
-    }
-
-    .reply-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .btn-attach {
-        color: #666;
-        cursor: pointer;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .btn-attach:hover {
-        color: var(--sidebar-bg);
-    }
-
-    .btn-send {
-        background-color: var(--accent-orange);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: 0.3s;
-    }
-
-    .btn-send:hover {
-        background-color: #e09210;
-        transform: translateY(-2px);
-    }
-
-    /* Sidebar Direita (Infos) */
-    .info-sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 30px;
-    }
-
-    .info-card {
-        background: var(--card-white);
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .info-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 15px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 10px;
-    }
-
-    .info-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        font-size: 13px;
-    }
-
-    .info-label {
-        color: #888;
-    }
-
-    .info-value {
-        font-weight: 500;
-        color: #333;
-        text-align: right;
-    }
-
-    /* Badges */
-    .badge {
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 500;
-        color: white;
-    }
-
-    .badge-open {
-        background-color: var(--status-open);
-    }
-
-    .badge-high {
-        background-color: var(--status-high);
-    }
-
-    .badge-info {
-        background-color: #3498db;
-    }
-
-    .action-btn {
-        width: 100%;
-        padding: 10px;
-        margin-top: 10px;
-        border: 1px solid #ddd;
-        background: white;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #555;
-        transition: 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-    }
-
-    .action-btn:hover {
-        background: #f5f5f5;
-        border-color: #ccc;
-    }
-
-    .btn-close {
-        color: #e74c3c;
-        border-color: #fadbd8;
-    }
-
-    .btn-close:hover {
-        background: #fadbd8;
-    }
-
-    /* Responsividade */
-    @media (max-width: 900px) {
-        .ticket-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .sidebar {
-            width: 70px;
-            padding: 10px;
-        }
-
-        .profile-name,
-        .nav-menu span,
-        .ticket-id {
-            display: none;
-        }
-
-        .nav-menu a {
-            justify-content: center;
-        }
-
-        .nav-menu a i {
-            margin: 0;
-        }
-    }
-</style>
+<!-- Inline styles removed to use dashboard.css -->
 
 <body>
 
@@ -411,6 +25,7 @@
     <main class="main-content">
 
         <div class="page-header">
+            <i class="fa-solid fa-bars mobile-menu-toggle" style="display: none; margin-right: 15px;"></i>
             <div>
                 <div class="breadcrumb">
                     {% if is_tech %}
@@ -494,7 +109,6 @@
                 {% endif %}
 
                 <script>
-                    const ticketId = {{ ticket.id }};
                     const chatHistory = document.getElementById('chat-history');
                     // Store the last known number of messages to avoid unnecessary re-renders (simple version)
                     let lastMsgCount = -1;
@@ -516,7 +130,7 @@
 
                     async function loadMessages() {
                         try {
-                            const response = await fetch(`chat/get/`);
+                            const response = await fetch("{% url 'get_chat_messages' ticket.id %}");
                             if (!response.ok) return;
                             const data = await response.json();
 
@@ -604,7 +218,7 @@
                             // Need CSRF token for fetch POST if not in form
                             const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-                            const response = await fetch(`chat/send/`, {
+                            const response = await fetch("{% url 'send_chat_message' ticket.id %}", {
                                 method: 'POST',
                                 body: formData,
                                 headers: {
@@ -667,6 +281,68 @@
                         <span class="info-label">Categoria:</span>
                         <span class="info-value">{{ ticket.category.name }}</span>
                     </div>
+
+                    {% if ticket.sla_response_due_at or ticket.sla_resolution_due_at %}
+                    <div style="border-top:1px solid #eee; margin:10px 0; padding-top:10px;">
+                        {% if ticket.sla_resolution_due_at %}
+                        <div class="info-row">
+                            <span class="info-label" style="font-size:12px;">SLA Resolução:</span>
+                            <span class="info-value"
+                                style="font-size:12px; font-family:monospace; font-weight:bold; color:var(--accent-orange);"
+                                id="sla-resolution-timer" data-seconds="{{ sla_resolution_seconds }}"
+                                data-stopped="{% if ticket.status == 'FEC' %}true{% else %}false{% endif %}">
+                                --:--:--
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <script>
+                        function startSlaTimer(elementId) {
+                            const el = document.getElementById(elementId);
+                            if (!el) return;
+
+                            let seconds = parseInt(el.getAttribute('data-seconds'));
+                            let isStopped = el.getAttribute('data-stopped') === 'true';
+
+                            function updateDisplay() {
+                                if (seconds <= 0) {
+                                    el.textContent = "00:00:00";
+                                    el.style.color = "red";
+                                    return;
+                                }
+
+                                const h = Math.floor(seconds / 3600);
+                                const m = Math.floor((seconds % 3600) / 60);
+                                const s = seconds % 60;
+
+                                const hStr = h < 10 ? '0' + h : h;
+                                const mStr = m < 10 ? '0' + m : m;
+                                const sStr = s < 10 ? '0' + s : s;
+
+                                el.textContent = `${hStr}:${mStr}:${sStr}`;
+
+                                if (!isStopped) {
+                                    seconds--;
+                                } else {
+                                    // If stopped, just ensure we keep the color/format steady
+                                    if (seconds > 0) el.style.color = "#28a745"; // Green if closed within SLA
+                                    else el.style.color = "red";
+                                }
+                            }
+
+                            updateDisplay();
+
+                            if (!isStopped) {
+                                setInterval(updateDisplay, 1000);
+                            }
+                        }
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                            startSlaTimer('sla-resolution-timer');
+                        });
+                    </script>
+                    {% endif %}
 
 
                     <div class="info-row">
@@ -731,4 +407,6 @@
             </div>
     </main>
 </body>
+
+</html>
 {% endblock %}

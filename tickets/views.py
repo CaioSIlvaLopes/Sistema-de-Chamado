@@ -53,6 +53,25 @@ def ticket_detail(request, ticket_id):
         # Client logic: can only view own tickets
         if ticket.opened_by != user:
             return redirect('meus_chamados')
+            
+    # Calculate Business Seconds Left for SLA
+    from django.utils import timezone
+    from .utils import get_business_time_left
+    
+    # If ticket is closed, stop the timer at closing_date
+    if ticket.status == 'FEC' and ticket.closing_date:
+        reference_time = ticket.closing_date
+    else:
+        reference_time = timezone.now()
+    
+    sla_response_seconds = 0
+    sla_resolution_seconds = 0
+    
+    if ticket.sla_response_due_at:
+        sla_response_seconds = get_business_time_left(reference_time, ticket.sla_response_due_at)
+        
+    if ticket.sla_resolution_due_at:
+        sla_resolution_seconds = get_business_time_left(reference_time, ticket.sla_resolution_due_at)
 
     context = {
         'ticket': ticket,
@@ -61,7 +80,9 @@ def ticket_detail(request, ticket_id):
         'client': user if not is_tech else None,
         'opened_by': opened_by,
         # 'departamento': ... removed as Account does not have department
-        'categoria': ticket.category
+        'categoria': ticket.category,
+        'sla_response_seconds': sla_response_seconds,
+        'sla_resolution_seconds': sla_resolution_seconds,
     }
     return render(request, 'ticket_detail.html', context)
         
@@ -139,56 +160,4 @@ def sucess_menssage(request,ticket_id):
     }
     return render(request,'sucess_message_ticket.html',context)
 
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from .models import ChatMessage
 
-@login_required
-def get_chat_messages(request, ticket_id):
-    ticket = get_object_or_404(Tickets, id=ticket_id)
-    # Check permission
-    if not request.user.is_technician and ticket.opened_by != request.user:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
-        
-    messages = ticket.messages.all().order_by('timestamp')
-    data = []
-    for msg in messages:
-        sender_name = msg.sender.first_name or msg.sender.username
-        if msg.sender.is_technician:
-            sender_name += " (Técnico)"
-            
-        data.append({
-            'id': msg.id,
-            'sender': sender_name,
-            'is_me': msg.sender == request.user,
-            'message': msg.message,
-            'attachment_url': msg.attachment.url if msg.attachment else None,
-            'timestamp': msg.timestamp.strftime('%d/%m/%Y %H:%M'),
-        })
-    return JsonResponse({'messages': data})
-
-@login_required
-@require_POST
-def send_chat_message(request, ticket_id):
-    ticket = get_object_or_404(Tickets, id=ticket_id)
-    # Check permission
-    if not request.user.is_technician and ticket.opened_by != request.user:
-         return JsonResponse({'error': 'Unauthorized'}, status=403)
-
-    message_text = request.POST.get('message', '').strip()
-    attachment = request.FILES.get('attachment')
-    
-    if not message_text and not attachment:
-        return JsonResponse({'error': 'Empty message'}, status=400)
-        
-    if attachment:
-        if attachment.size > 12 * 1024 * 1024:
-            return JsonResponse({'error': 'Image too large. Max 12MB.'}, status=400)
-            
-    ChatMessage.objects.create(
-        ticket=ticket,
-        sender=request.user,
-        message=message_text,
-        attachment=attachment
-    )
-    return JsonResponse({'status': 'ok'})

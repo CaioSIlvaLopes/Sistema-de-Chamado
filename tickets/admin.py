@@ -4,9 +4,9 @@ from tickets.models import Category
 from tickets.models import ChatMessage
 
 class TicketsAdmin(admin.ModelAdmin):
-    list_display=('id','category','status','priority','opened_by','attributed_to','description','opening_date','updated_date','closing_date','attachment','comments')
-    search_fields=('id','opened_by','attributed_to','description','status','priority','opening_date','updated_date','closing_date',)
-    list_filter = ('opened_by','attributed_to','status','opening_date','updated_date','closing_date',)
+    list_display=('id','category','status','priority','opened_by','attributed_to','description','opening_date','sla_resolution_due_at','updated_date','closing_date','attachment')
+    search_fields=('id','opened_by','attributed_to','description','status','priority','opening_date','sla_resolution_due_at','updated_date','closing_date')
+    list_filter = ('opened_by','attributed_to','status','opening_date','sla_resolution_due_at','updated_date','closing_date',)
 
 admin.site.register(Tickets, TicketsAdmin)
 

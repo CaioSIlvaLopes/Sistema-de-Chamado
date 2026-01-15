@@ -8,8 +8,24 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
+
+class SLAPolicy(models.Model):
+    # Mapping to Ticket priorities
+    PRIORITY_CHOICES =[
+        ('DEF','desconhecido'),
+        ('BAX','Baixa'),
+        ('MED','Média'),
+        ('ALT','Alta'),
+        ('URG','Urgente'),
+    ]
     
+    priority = models.CharField(max_length=3, choices=PRIORITY_CHOICES, unique=True, verbose_name="Prioridade do Ticket")
+    response_time_hours = models.IntegerField(default=4, verbose_name="Tempo para 1ª Resposta (Horas)")
+    resolution_time_hours = models.IntegerField(default=24, verbose_name="Tempo para Resolução (Horas)")
     
+    def __str__(self):
+        return f"SLA {self.get_priority_display()} (Resp: {self.response_time_hours}h, Res: {self.resolution_time_hours}h)"
+
 class Tickets (models.Model):
     STATUS_CHOICES = [
         ('SEM', 'Sem atendimento'),
@@ -36,7 +52,10 @@ class Tickets (models.Model):
     updated_date = models.DateTimeField(auto_now=True)
     closing_date = models.DateTimeField(null=True, blank=True)
     attachment = models.ImageField(upload_to='attachment/', null=True, blank=True)
-    comments = models.CharField(max_length=400, blank=True, null=True)
+    
+    # SLA Fields
+    sla_response_due_at = models.DateTimeField(null=True, blank=True, verbose_name="SLA response")
+    sla_resolution_due_at = models.DateTimeField(null=True, blank=True, verbose_name="SLA resolution")
 
     def __str__(self):
         return str(self.id)
@@ -50,3 +69,17 @@ class ChatMessage(models.Model):
     
     def __str__(self):
         return f"Msg {self.id} on Ticket {self.ticket.id}"
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    ticket = models.ForeignKey(Tickets, on_delete=models.CASCADE, null=True, blank=True)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        
+    def __str__(self):
+        return f"Notification for {self.recipient}: {self.title}"

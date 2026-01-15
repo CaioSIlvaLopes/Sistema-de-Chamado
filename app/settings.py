@@ -20,6 +20,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
+    'chat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -28,6 +31,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tickets',
     'users',
+
+]
+
+
+LOGIN_REDIRECT_URL = 'meus_chamados' # Adjust as needed
+LOGOUT_REDIRECT_URL = 'login_client'
+
+# Celery Configuration (Example - Adjust for user env if needed)
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+
 ]
 
 AUTH_USER_MODEL = 'users.Account'
@@ -40,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -60,6 +79,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'app.wsgi.application'
+ASGI_APPLICATION = 'app.asgi.application'
+
+# Configuração de Canais (Channels)
+# Por padrão, tentamos usar o Redis. Se der erro de conexão (10061),
+# significa que você não tem um servidor Redis rodando na porta 6379.
+# Para desenvolvimento local sem Redis, usamos o InMemoryChannelLayer.
+
+# CONFIGURAÇÃO REDIS (Recomendado para Produção)
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
+
+# CONFIGURAÇÃO EM MEMÓRIA (Fallback para Desenvolvimento sem Redis)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 
 # Database

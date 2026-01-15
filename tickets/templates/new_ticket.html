@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
 </head>
 
 <body>
@@ -19,6 +20,8 @@
     <main class="main-content">
 
         <div class="page-header">
+            <i class="fa-solid fa-bars mobile-menu-toggle"
+                style="display: none; cursor: pointer; font-size: 24px; margin-bottom: 15px;"></i>
             <h2>Abrir Novo Chamado</h2>
             <p>Preencha os dados para abrir um ticket de suporte</p>
         </div>

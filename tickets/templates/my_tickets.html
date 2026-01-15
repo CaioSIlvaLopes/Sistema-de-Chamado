@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
 </head>
 
 <body>
@@ -17,45 +18,54 @@
 
     <main class="main-content">
         <header>
+            <i class="fa-solid fa-bars mobile-menu-toggle" style="display: none;"></i>
             <h2>Meus Chamados</h2>
-            <i class="fa-solid fa-bars" style="font-size: 20px; cursor: pointer;"></i>
+            <i class="fa-solid fa-bars" style="font-size: 20px; cursor: pointer; display: none;"></i>
         </header>
 
         {% if chamados %}
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Status</th>
-                    <th>Prioridade</th>
-                    <th>Abertura</th>
-                    <th>Técnico</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ticket in chamados %}
-                <tr>
-                    <td>{{ ticket.id }}</td>
-                    <td>{{ ticket.description|truncatechars:50 }}</td>
-                    <td>{{ ticket.category.name }}</td>
-                    <td>{{ ticket.get_status_display }}</td>
-                    <td>{{ ticket.get_priority_display }}</td>
-                    <td>{{ ticket.opening_date|date:"d/m/Y H:i" }}</td>
-                    <td>
-                        {% if ticket.attributed_to %}
-                        {{ ticket.attributed_to.display_name|default:ticket.attributed_to.username }}
-                        {% else %}
-                        <span>--Pendente--</span>
-                        {% endif %}
-                    </td>
-                    <td><a href="{% url 'detail_chamado' ticket.id %}" class="view-btn">Ver</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>SLA Resolução</th>
+                        <th>Categoria</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Abertura</th>
+                        <th>Técnico</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in chamados %}
+                    <tr>
+                        <td>{{ ticket.id }}</td>
+                        <td>
+                            {% if ticket.sla_resolution_due_at %}
+                            {{ ticket.sla_resolution_due_at|date:"d/m/Y H:i" }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td>{{ ticket.category.name }}</td>
+                        <td>{{ ticket.get_status_display }}</td>
+                        <td>{{ ticket.get_priority_display }}</td>
+                        <td>{{ ticket.opening_date|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            {% if ticket.attributed_to %}
+                            {{ ticket.attributed_to.display_name|default:ticket.attributed_to.username }}
+                            {% else %}
+                            <span>--Pendente--</span>
+                            {% endif %}
+                        </td>
+                        <td><a href="{% url 'detail_chamado' ticket.id %}" class="view-btn">Ver</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
         <p>Você ainda não abriu nenhum chamado.</p>
         {% endif %}

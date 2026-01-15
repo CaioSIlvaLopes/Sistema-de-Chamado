@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room - {{ room_name }}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --bg-color: #f3f4f6;
+            --chat-bg: #ffffff;
+            --message-sent: #4f46e5;
+            --message-sent-text: #ffffff;
+            --message-received: #f3f4f6;
+            --message-received-text: #1f2937;
+            --border-color: #e5e7eb;
+            --text-color: #111827;
+            --text-muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 600px;
+            height: 80vh;
+            background: var(--chat-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .connection-status {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+        }
+
+        #chat-log {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Scrollbar Styling */
+        #chat-log::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat-log::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+            animation: messagePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes messagePop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Mensagem enviada (Direita) */
+        .message.sent {
+            align-self: flex-end;
+            background-color: var(--message-sent);
+            color: var(--message-sent-text);
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Mensagem recebida (Esquerda) */
+        .message.received {
+            align-self: flex-start;
+            background-color: var(--message-received);
+            color: var(--message-received-text);
+            border-bottom-left-radius: 4px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            background: var(--bg-color);
+            padding: 8px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+
+        .input-group:focus-within {
+            background: #ffffff;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        #chat-message-input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            color: var(--text-color);
+        }
+
+        #chat-message-submit {
+            padding: 10px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        #chat-message-submit:hover {
+            background-color: var(--primary-dark);
+        }
+
+        #chat-message-submit:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="connection-status">
+                <span id="status-dot" class="status-dot" style="background-color: #ef4444;"></span>
+                <span id="status-text">Desconectado</span>
+            </div>
+            <h1>#{{ room_name }}</h1>
+        </div>
+
+        <div id="chat-log">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div class="input-area">
+            <div class="input-group">
+                <input id="chat-message-input" type="text" placeholder="Digite sua mensagem..." autocomplete="off">
+                <button id="chat-message-submit">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{ room_name|json_script:"room-name" }}
+
+    <script>
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+        const chatLog = document.querySelector('#chat-log');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+
+        // Gerar um ID único para esta sessão para diferenciar minhas mensagens
+        const mySessionId = Math.random().toString(36).substr(2, 9);
+
+        function updateStatus(isConnected) {
+            if (isConnected) {
+                statusDot.style.backgroundColor = '#10b981';
+                statusText.textContent = 'Online';
+            } else {
+                statusDot.style.backgroundColor = '#ef4444';
+                statusText.textContent = 'Desconectado';
+            }
+        }
+
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        chatSocket.onopen = function (e) {
+            updateStatus(true);
+            addSystemMessage('Conectado à sala de chat.');
+        };
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            const isMe = data.sender_id === mySessionId;
+            appendMessage(data.message, isMe ? 'sent' : 'received');
+        };
+
+        chatSocket.onclose = function (e) {
+            updateStatus(false);
+            console.error('Chat socket closed unexpectedly');
+            addSystemMessage('Conexão perdida.');
+        };
+
+        function appendMessage(message, type) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', type);
+            messageElement.textContent = message;
+            chatLog.appendChild(messageElement);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function addSystemMessage(text) {
+            const msg = document.createElement('div');
+            msg.style.textAlign = 'center';
+            msg.style.fontSize = '0.8rem';
+            msg.style.color = '#9ca3af';
+            msg.style.margin = '10px 0';
+            msg.textContent = text;
+            chatLog.appendChild(msg);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function (e) {
+            if (e.key === 'Enter') {
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function (e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            if (message.trim() === "") return;
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'sender_id': mySessionId
+            }));
+
+            messageInputDom.value = '';
+        };
+    </script>
+</body>
+
+</html>
