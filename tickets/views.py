@@ -30,13 +30,23 @@ def novo_ticket(request):
 @login_required
 def meus_chamados(request):
     chamados = Tickets.objects.filter(opened_by=request.user).order_by('-opening_date')
+    
+    # Dashboard Stats
+    total_tickets = chamados.count()
+    open_tickets = chamados.filter(status='ABE').count()
+    resolved_tickets = chamados.filter(status='FEC').count()
+    pending_tickets = chamados.filter(status='SEM').count()
 
     context = {
-        'chamados': chamados,
-        'client': request.user
+        'chamados': chamados, # List for the table
+        'client': request.user,
+        'Chamados_totais': total_tickets,
+        'chamados_abertos_count': open_tickets,
+        'chamados_resolvidos_count': resolved_tickets,
+        'chamados_pendentes_count': pending_tickets,
     }
 
-    return render(request, 'my_tickets.html', context)
+    return render(request, 'dashbord.html', context)
 
 @login_required
 def ticket_detail(request, ticket_id):

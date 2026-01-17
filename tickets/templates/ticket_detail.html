@@ -9,7 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/pages/tickets.css' %}?v=2">
     <script src="{% static 'js/mobile.js' %}" defer></script>
 </head>
 
@@ -24,28 +27,23 @@
 
     <main class="main-content">
 
-        <div class="page-header">
-            <i class="fa-solid fa-bars mobile-menu-toggle" style="display: none; margin-right: 15px;"></i>
-            <div>
-                <div class="breadcrumb">
-                    {% if is_tech %}
-                    <a href="{% url 'dashboard_technical' %}" style="color:#666; text-decoration:none;">Painel</a> /
-                    {% else %}
-                    <a href="{% url 'meus_chamados' %}" style="color:#666; text-decoration:none;">Meus Chamados</a> /
-                    {% endif %}
-                    Chamados / #{{ ticket.id }}
-                </div>
+        <header>
+            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+            <h2>Detalhes do Chamado #{{ ticket.id }}</h2>
+        </header>
 
-                <h2 class="ticket-title">
-                    {{ ticket.description|truncatechars:30 }}
-                    <span class="ticket-id">#{{ ticket.id }}</span>
-                </h2>
+        <div class="breadcrumb-bar">
+            <div class="breadcrumb" style="color: var(--text-secondary); font-size: 14px;">
+                {% if is_tech %}
+                <a href="{% url 'dashboard_technical' %}"
+                    style="color: var(--text-secondary); text-decoration:none;">Painel</a>
+                {% else %}
+                <a href="{% url 'meus_chamados' %}" style="color: var(--text-secondary); text-decoration:none;">Meus
+                    Chamados</a>
+                {% endif %}
+                <i class="fa-solid fa-chevron-right" style="font-size: 10px; margin: 0 5px;"></i>
+                <span>Chamado #{{ ticket.id }}</span>
             </div>
-
-            <a href="{% if is_tech %}{% url 'dashboard_technical' %}{% else %}{% url 'meus_chamados' %}{% endif %}"
-                style="text-decoration:none; color:#666;">
-                <i class="fa-solid fa-arrow-left"></i> Voltar
-            </a>
         </div>
 
         <div class="ticket-grid">
@@ -255,24 +253,29 @@
             <!-- SIDEBAR INFO -->
             <div class="info-sidebar">
 
-                <div class="info-card">
-                    <div class="info-title">Detalhes do Chamado</div>
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header" style="margin-bottom: 15px;">Detalhes do Chamado</div>
 
                     <div class="info-row">
                         <span class="info-label">Status:</span>
                         {% if ticket.status == 'SEM' %}<span class="badge"
-                            style="background:#eee; color:#777;">Pendente</span>
+                            style="background:var(--input-border); color:var(--text-secondary);">Pendente</span>
                         {% elif ticket.status == 'ABE' %}<span class="badge badge-open">Em Andamento</span>
-                        {% elif ticket.status == 'FEC' %}<span class="badge"
-                            style="background:#d4edda; color:#155724;">Finalizado</span>
+                        {% elif ticket.status == 'FEC' %}<span class="badge badge-closed">Finalizado</span>
                         {% endif %}
                     </div>
 
                     <div class="info-row">
                         <span class="info-label">Prioridade:</span>
-                        <span
-                            class="badge {% if ticket.priority == 'URG' or ticket.priority == 'ALT' %}badge-high{% elif ticket.priority == 'BAX' or ticket.priority == 'MED' or ticket.priority == 'DEF' %}badge-info{% else %}badge-open{% endif %}">
-                            {{ ticket.get_priority_display }} </span>
+                        {% if ticket.priority == 'URG' or ticket.priority == 'ALT' %}
+                        <span class="badge" style="background: rgba(231, 76, 60, 0.1); color: var(--status-high);">{{
+                            ticket.get_priority_display }}</span>
+                        {% elif ticket.priority == 'BAX' or ticket.priority == 'MED' %}
+                        <span class="badge" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">{{
+                            ticket.get_priority_display }}</span>
+                        {% else %}
+                        <span class="badge badge-open">{{ ticket.get_priority_display }}</span>
+                        {% endif %}
                     </div>
 
                     <!-- Deparment removed as per new model -->
@@ -359,8 +362,8 @@
                     </div>
                 </div>
 
-                <div class="info-card">
-                    <div class="info-title">Atribuição</div>
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header" style="margin-bottom: 15px;">Atribuição</div>
 
                     <div class="info-row">
                         <span class="info-label">Técnico:</span>
@@ -381,8 +384,8 @@
 
                 <!-- Ações para Técnico -->
                 {% if is_tech %}
-                <div class="info-card">
-                    <div class="info-title">Ações do Técnico</div>
+                <div class="card">
+                    <div class="card-header" style="margin-bottom: 15px;">Ações do Técnico</div>
 
                     {% if not ticket.attributed_to and ticket.status != 'FEC' %}
                     <a href="{% url 'ticket_action' ticket.id 'receive' %}" class="action-btn"

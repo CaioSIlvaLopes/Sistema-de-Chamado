@@ -1,0 +1,241 @@
+/* --- TICKET DETAIL PAGE --- */
+.ticket-title {
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+.ticket-id {
+    color: var(--accent-orange);
+    font-weight: 300;
+}
+
+.ticket-grid {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr;
+    gap: 30px;
+    gap: 30px;
+    min-height: 500px;
+}
+
+.breadcrumb-bar {
+    margin-bottom: 25px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+}
+
+
+.conversation-area {
+    background: var(--card-white);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.message-card {
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 12px;
+    background: #fdfdfd;
+}
+
+.message-card.msg-client {
+    border-left: 4px solid var(--accent-orange);
+}
+
+.message-card.msg-support {
+    border-left: 4px solid var(--primary-color);
+    background: #f4f7fa;
+}
+
+.msg-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.user-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar-small {
+    width: 40px;
+    height: 40px;
+    background: #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.msg-client .avatar-small {
+    background: var(--accent-orange);
+}
+
+.msg-support .avatar-small {
+    background: var(--primary-color);
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.msg-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.msg-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+}
+
+.reply-box {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.reply-textarea {
+    width: 100%;
+    border: 2px solid #eaedf0;
+    border-radius: 12px;
+    padding: 15px;
+    min-height: 100px;
+    resize: vertical;
+    outline: none;
+    font-size: 14px;
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.reply-textarea:focus {
+    border-color: var(--accent-orange);
+}
+
+.reply-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-attach {
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+
+.btn-attach:hover {
+    color: var(--accent-orange);
+}
+
+.btn-send {
+    background: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.btn-send:hover {
+    background: #e09210;
+    transform: translateY(-2px);
+}
+
+/* Sidebar Info */
+.ticket-info-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-card {
+    background: var(--card-white);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+}
+
+.info-card h4 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.info-row {
+    margin-bottom: 15px;
+}
+
+.info-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.open {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.status-badge.closed {
+    background: #eee;
+    color: #777;
+}
+
+.status-badge.pending {
+    background: rgba(255, 193, 7, 0.1);
+    color: #f39c12;
+}
+
+/* --- RESPONSIVE TICKETS --- */
+@media (max-width: 991px) {
+    .ticket-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ticket-info-sidebar {
+        order: -1;
+        /* Show info on top on mobile? Or bottom? Default is bottom. */
+    }
+}

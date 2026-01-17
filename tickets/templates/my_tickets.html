@@ -9,7 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
     <script src="{% static 'js/mobile.js' %}" defer></script>
 </head>
 
@@ -18,9 +20,8 @@
 
     <main class="main-content">
         <header>
-            <i class="fa-solid fa-bars mobile-menu-toggle" style="display: none;"></i>
+            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
             <h2>Meus Chamados</h2>
-            <i class="fa-solid fa-bars" style="font-size: 20px; cursor: pointer; display: none;"></i>
         </header>
 
         {% if chamados %}

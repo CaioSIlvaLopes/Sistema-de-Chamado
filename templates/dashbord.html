@@ -8,10 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
     <script src="{% static 'js/mobile.js' %}" defer></script>
 
-    <!-- Inline styles removed to use dashboard.css -->
+    <!-- Inline styles removed in favor of updated dashboard.css -->
 </head>
 
 <body>
@@ -20,51 +23,58 @@
 
     <main class="main-content">
         <header>
-            <i class="fa-solid fa-bars mobile-menu-toggle"
-                style="display: none; cursor: pointer; margin-right: 15px;"></i>
-            <h2>Dashboard User</h2>
-            <!-- Removing/Hiding original random bars if not needed or keeping as is? The original had one. -->
+            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+            <h2>Dashboard</h2>
         </header>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section" style="margin-bottom: 30px;">
+            <h1 style="font-size: 28px; font-weight: 700; color: var(--primary-color);">Olá, {{
+                client.display_name|default:'Usuário' }}! 👋</h1>
+            <p style="color: var(--text-secondary); margin-top: 5px;">Aqui está o resumo dos seus chamados e atividades
+                recentes.</p>
+        </div>
+
 
         <div class="stats-grid">
             <div class="card dark">
                 <div class="card-header">
-                    <span>Earning</span>
-                    <i class="fa-solid fa-dollar-sign"></i>
+                    <span>Chamados Totais</span>
+                    <i class="fa-solid fa-ticket"></i>
                 </div>
-                <div class="card-value">$ 628</div>
+                <div class="card-value">{{ Chamados_totais|default:'0' }}</div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <span>Share</span>
-                    <i class="fa-solid fa-share-nodes icon-orange"></i>
+                    <span>Em Aberto</span>
+                    <i class="fa-solid fa-envelope-open-text icon-orange"></i>
                 </div>
-                <div class="card-value">2434</div>
+                <div class="card-value">{{ chamados_abertos_count|default:'0' }}</div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <span>Likes</span>
-                    <i class="fa-solid fa-thumbs-up icon-orange"></i>
+                    <span>Resolvidos</span>
+                    <i class="fa-solid fa-check-circle" style="color: var(--status-open);"></i>
                 </div>
-                <div class="card-value">1259</div>
+                <div class="card-value">{{ chamados_resolvidos_count|default:'0' }}</div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <span>Rating</span>
-                    <i class="fa-solid fa-star icon-orange"></i>
+                    <span>Pendentes</span>
+                    <i class="fa-solid fa-clock" style="color: #f39c12;"></i>
                 </div>
-                <div class="card-value">8,5</div>
+                <div class="card-value">{{ chamados_pendentes_count|default:'0' }}</div>
             </div>
         </div>
 
         <div class="middle-grid">
             <div class="card">
                 <div class="chart-header">
-                    <span style="font-size: 14px; color:#666;">Result</span>
-                    <button class="check-btn">Check Now</button>
+                    <span style="font-size: 14px; color:#666;">Histórico de Chamados</span>
+                    <button class="check-btn">Atualizar</button>
                 </div>
 
                 <div class="bar-chart-container">
@@ -117,62 +127,101 @@
                         <div class="donut-center">45%</div>
                     </div>
                     <div class="donut-legend">
-                        <div>Lorem ipsum</div>
-                        <div>Lorem ipsum</div>
-                        <div>Lorem ipsum</div>
+                        <div><span class="dot blue"></span> Abertos</div>
+                        <div><span class="dot orange"></span> Fechados</div>
+                        <div><span class="dot" style="background: #ccc;"></span> Outros</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bottom-grid">
-            <div class="card" style="padding: 0; overflow: hidden;">
-                <div style="padding: 20px;">
-                    <div class="legend-item"><span class="dot orange"></span> Lorem Ipsum</div>
-                    <div class="legend-item"><span class="dot blue"></span> Dolor Amet</div>
-                </div>
-                <svg viewBox="0 0 500 150" preserveAspectRatio="none"
-                    style="width: 100%; height: 120px; display:block;">
-                    <path d="M0,100 C150,150 250,50 350,100 C400,120 450,80 500,100 L500,150 L0,150 Z" fill="#10243e"
-                        opacity="0.8"></path>
-                    <path d="M0,120 C100,80 200,140 300,80 C400,20 450,100 500,80 L500,150 L0,150 Z" fill="#fca311"
-                        opacity="0.8"></path>
-                </svg>
+        <div class="card">
+            <div class="card-header"
+                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0; margin-bottom: 20px;">
+                <h3 style="font-size: 18px; font-weight: 600; color: var(--text-primary);">Meus Chamados Recentes</h3>
+                <a href="{% url 'novo_ticket' %}" class="btn-action" style="text-decoration: none;">
+                    <i class="fa-solid fa-plus"></i> Novo Chamado
+                </a>
             </div>
-
-            <div class="card">
-                <div class="calendar-grid">
-                    <div class="cal-head">S</div>
-                    <div class="cal-head">M</div>
-                    <div class="cal-head">T</div>
-                    <div class="cal-head">W</div>
-                    <div class="cal-head">T</div>
-                    <div class="cal-head">F</div>
-                    <div class="cal-head">S</div>
-
-                    <div class="cal-day"></div>
-                    <div class="cal-day"></div>
-                    <div class="cal-day active-blue">1</div>
-                    <div class="cal-day">2</div>
-                    <div class="cal-day">3</div>
-                    <div class="cal-day">4</div>
-                    <div class="cal-day">5</div>
-                    <div class="cal-day">6</div>
-                    <div class="cal-day">7</div>
-                    <div class="cal-day">8</div>
-                    <div class="cal-day">9</div>
-                    <div class="cal-day">10</div>
-                    <div class="cal-day">11</div>
-                    <div class="cal-day">12</div>
-                    <div class="cal-day">13</div>
-                    <div class="cal-day">14</div>
-                    <div class="cal-day active-orange">15</div>
-                    <div class="cal-day">16</div>
-                    <div class="cal-day active-blue">17</div>
-                    <div class="cal-day">18</div>
-                    <div class="cal-day">19</div>
-                </div>
-                <button class="check-btn" style="width: 100%; margin-top: 20px; text-align: center;">Check Now</button>
+            <div class="table-responsive">
+                <table class="styled-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Assunto</th>
+                            <th>Categoria</th>
+                            <th>Prioridade</th>
+                            <th>Status</th>
+                            <th>Técnico</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in chamados|slice:":10" %}
+                        <tr>
+                            <td style="font-weight: 600;">#{{ ticket.id }}</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div
+                                        style="width: 35px; height: 35px; background: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary-color);">
+                                        <i class="fa-solid fa-ticket"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 500; color: var(--text-primary);">{{
+                                            ticket.description|truncatechars:30 }}</div>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">{{
+                                            ticket.category.name|default:'Geral' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ ticket.category.name }}</td>
+                            <td>
+                                {% if ticket.priority == 'URG' or ticket.priority == 'ALT' %}
+                                <span class="badge badge-high">Alta</span>
+                                {% elif ticket.priority == 'MED' %}
+                                <span class="badge badge-medium">Média</span>
+                                {% else %}
+                                <span class="badge badge-low">Baixa</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ticket.status == 'ABE' %}
+                                <span class="badge badge-open">Aberto</span>
+                                {% elif ticket.status == 'FEC' %}
+                                <span class="badge badge-closed">Fechado</span>
+                                {% else %}
+                                <span class="badge badge-pending">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ticket.attributed_to %}
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <div class="avatar-small" style="width: 24px; height: 24px; font-size: 10px;">
+                                        {{ ticket.attributed_to.display_name|slice:":1" }}
+                                    </div>
+                                    {{ ticket.attributed_to.display_name|default:ticket.attributed_to.username }}
+                                </div>
+                                {% else %}
+                                <span style="color: #ccc;">--</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'detail_chamado' ticket.id %}" class="btn-icon" title="Ver Detalhes">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                <div style="color: #ccc; margin-bottom: 10px; font-size: 40px;"><i
+                                        class="fa-solid fa-inbox"></i></div>
+                                Nenhum chamado encontrado.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 

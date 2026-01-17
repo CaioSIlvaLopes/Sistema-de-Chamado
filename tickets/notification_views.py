@@ -28,3 +28,8 @@ def mark_notification_read(request, notification_id):
     if notification.ticket:
         return redirect('detail_chamado', ticket_id=notification.ticket.id)
     return redirect('notifications_view')
+
+@login_required
+def mark_all_notifications_read(request):
+    Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+    return redirect('notifications')

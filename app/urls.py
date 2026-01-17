@@ -11,7 +11,9 @@ from users.views import login_view, logout_view
 from django.shortcuts import redirect
 from tickets.views import ticket_reports
 from users.views import register, dashboard_technical, ticket_action
-from tickets.notification_views import notifications_view, mark_notification_read
+from tickets.notification_views import notifications_view
+from tickets.notification_views import mark_notification_read
+from tickets.notification_views import mark_all_notifications_read
 
 def redirect_to_login(request):
     return redirect('login_client')
@@ -20,6 +22,7 @@ urlpatterns = [
     path('', redirect_to_login),
     path('admin/', admin.site.urls),
     path('notificacoes/', notifications_view, name='notifications'),
+    path('notificacoes/ler-todas/', mark_all_notifications_read, name='mark_all_read'),
     path('notificacoes/ler/<int:notification_id>/', mark_notification_read, name='mark_notification_read'),
     path('relatorios/',ticket_reports, name='ticket_reports'),
     path('chamados/', novo_ticket, name='novo_ticket'),

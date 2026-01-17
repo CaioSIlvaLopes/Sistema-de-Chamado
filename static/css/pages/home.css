@@ -1,0 +1,244 @@
+/* --- MIDDLE SECTION --- */
+.middle-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+    min-height: 280px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Bar Chart Simulation */
+.bar-chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 180px;
+    padding: 10px 0;
+}
+
+.bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.bar {
+    width: 14px;
+    border-radius: 10px;
+    transition: height 1s ease-out;
+}
+
+.bar.blue {
+    background-color: var(--sidebar-bg);
+    opacity: 0.8;
+}
+
+.bar.orange {
+    background-color: var(--accent-orange);
+}
+
+.month-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Donut Chart */
+.donut-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.donut-chart {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent-orange) 0% 45%, var(--sidebar-bg) 45% 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.donut-center {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.donut-legend {
+    width: 100%;
+    text-align: center;
+}
+
+.donut-legend div {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 4px 0;
+}
+
+/* --- BOTTOM SECTION --- */
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+    min-height: 220px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.dot.orange {
+    background: var(--accent-orange);
+}
+
+.dot.blue {
+    background: var(--sidebar-bg);
+}
+
+/* Calendar */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 15px;
+}
+
+.cal-head {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.cal-day {
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cal-day:hover:not(.active-orange):not(.active-blue) {
+    background-color: #f0f0f0;
+}
+
+.cal-day.active-orange {
+    background: var(--accent-orange);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(252, 163, 17, 0.4);
+}
+
+.cal-day.active-blue {
+    background: var(--sidebar-bg);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(16, 36, 62, 0.4);
+}
+
+/* --- RESPONSIVE HOME --- */
+@media (max-width: 991px) {
+
+    .middle-grid,
+    .bottom-grid {
+        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: auto !important;
+    }
+
+    .bar-chart-container {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .donut-wrapper {
+        padding: 20px 0;
+    }
+
+    .chart-header {
+        flex-direction: row;
+    }
+}
+
+/* --- TECHNICAL DASHBOARD STYLES --- */
+.stat-card {
+    background: var(--card-white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-info h3 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.stat-info p {
+    color: #888;
+    font-size: 14px;
+}
+
+.stat-icon {
+    font-size: 30px;
+    color: var(--accent-orange);
+    opacity: 0.8;
+}
+
+.ticket-list {
+    background: var(--card-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.ticket-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

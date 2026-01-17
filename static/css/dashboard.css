@@ -141,26 +141,11 @@ body {
     gap: 30px;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-header h2 {
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 24px;
-}
-
-header i {
-    color: var(--text-secondary);
-    transition: color 0.3s;
-}
-
-header i:hover {
-    color: var(--accent-orange);
+/* --- STATS CARDS --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
 }
 
 /* --- STATS CARDS --- */
@@ -168,6 +153,14 @@ header i:hover {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
+}
+
+.mobile-menu-toggle {
+    display: none !important;
+    cursor: pointer;
+    margin-right: 15px;
+    z-index: 1100;
+    position: relative;
 }
 
 .card {
@@ -423,7 +416,7 @@ table {
 th,
 td {
     padding: 18px 25px;
-    text-align: left;
+    text-align: center;
     font-size: 14px;
 }
 
@@ -955,7 +948,6 @@ textarea.form-control {
     /* Layout */
     body {
         position: relative;
-        /* For overlay positioning */
     }
 
     .main-content {
@@ -1001,7 +993,6 @@ textarea.form-control {
     /* Sidebar Close Button */
     .sidebar-close-btn {
         display: block !important;
-        /* Force show on mobile */
         position: absolute;
         top: 20px;
         right: 20px;
@@ -1025,28 +1016,34 @@ textarea.form-control {
 
     /* Header Mobile */
     header {
-        flex-direction: row-reverse;
-        /* Put burger on left if possible or just use flex logic */
-        justify-content: flex-end;
-        /* Burger left, title right? Or standard: Title Left, Burger Left? Usually Burger Left. */
+        display: flex;
+        align-items: center;
         gap: 15px;
+        flex-direction: row-reverse;
+        justify-content: space-between;
     }
 
     header h2 {
         font-size: 20px;
-        margin-right: auto;
+        margin: 0;
+        color: #333;
     }
 
     .mobile-menu-toggle {
         display: block !important;
         font-size: 24px;
-        color: var(--text-primary);
+        color: #333;
         cursor: pointer;
-        margin-right: 15px;
     }
 
-    /* Grids to 1 Column */
-    .stats-grid,
+    /* Stats Grid - Auto Fit Logic */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+        gap: 15px;
+    }
+
+    /* Charts/Other Grids - Force 1 Column */
     .middle-grid,
     .bottom-grid,
     .ticket-grid,
@@ -1054,8 +1051,25 @@ textarea.form-control {
     .profile-info-bar,
     .user-identity {
         grid-template-columns: 1fr !important;
+        display: flex !important;
         flex-direction: column !important;
         height: auto !important;
+        min-height: auto !important;
+    }
+
+    .bar-chart-container {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .donut-wrapper {
+        padding: 20px 0;
+    }
+
+    .check-btn {
+        width: 100%;
+        margin-top: 10px;
+        text-align: center;
     }
 
     .form-card {
@@ -1070,7 +1084,6 @@ textarea.form-control {
 
     .chart-header {
         flex-direction: row;
-        /* Keep buttons next to title */
     }
 
     /* Profile Adjustments */
@@ -1109,7 +1122,6 @@ textarea.form-control {
 
     table {
         min-width: 600px;
-        /* Ensure table doesn't squash too much */
     }
 }
 

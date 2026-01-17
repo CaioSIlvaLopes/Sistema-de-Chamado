@@ -9,200 +9,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/pages/notifications.css' %}?v=3">
     <script src="{% static 'js/mobile.js' %}" defer></script>
 </head>
-
-<style>
-    /* Styling similar to dashboard */
-    :root {
-        --sidebar-bg: #10243e;
-        --main-bg: #eef2f5;
-        --card-white: #ffffff;
-        --accent-orange: #fca311;
-        --text-grey: #a0a0a0;
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-        background-color: var(--main-bg);
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    /* REUSE SIDEBAR STYLES FROM DASHBOARD OR TICKET DETAIL */
-    /* Assuming sidebar is included and handles itself */
-
-    .main-content {
-        flex: 1;
-        padding: 30px;
-        overflow-y: auto;
-    }
-
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-    }
-
-    .page-title {
-        font-size: 24px;
-        color: #333;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    /* Notification List Styles */
-    .notification-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .notification-card {
-        background: var(--card-white);
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: transform 0.2s, box-shadow 0.2s;
-        border-left: 4px solid transparent;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .notification-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-    }
-
-    .notification-card.unread {
-        border-left-color: var(--accent-orange);
-        background-color: #fffaf0;
-        /* Light orange tint */
-    }
-
-    .notification-card.read {
-        border-left-color: #ccc;
-        opacity: 0.8;
-    }
-
-    .notif-content {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .notif-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background-color: #eef2f5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--sidebar-bg);
-        font-size: 20px;
-        flex-shrink: 0;
-    }
-
-    .unread .notif-icon {
-        background-color: rgba(252, 163, 17, 0.1);
-        color: var(--accent-orange);
-    }
-
-    .notif-texts {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .notif-title {
-        font-weight: 600;
-        font-size: 16px;
-        color: #333;
-    }
-
-    .notif-msg {
-        font-size: 14px;
-        color: #666;
-    }
-
-    .notif-meta {
-        font-size: 12px;
-        color: #999;
-        text-align: right;
-        min-width: 100px;
-    }
-
-
-
-    .empty-state {
-        text-align: center;
-        padding: 50px;
-        color: #888;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        border-radius: 12px;
-    }
-
-    /* Responsividade removida em favor do dashboard.css */
-</style>
 
 <body>
 
     {% include 'partials/sidebar.html' %}
 
     <main class="main-content">
-        <div class="page-header">
-            <h2 class="page-title">
-                <i class="fa-solid fa-bars mobile-menu-toggle"
-                    style="display: none; cursor: pointer; margin-right: 15px;"></i>
-                <i class="fa-solid fa-bell"></i> Notificações
-            </h2>
-        </div>
-
-        <style>
-            .filter-btn {
-                padding: 8px 16px;
-                border-radius: 20px;
-                text-decoration: none;
-                font-size: 13px;
-                color: #666;
-                background: white;
-                border: 1px solid #ddd;
-                transition: 0.2s;
-            }
-
-            .filter-btn:hover {
-                background: #f5f5f5;
-            }
-
-            .filter-btn.active {
-                background: var(--sidebar-bg);
-                color: white;
-                border-color: var(--sidebar-bg);
-            }
-        </style>
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+                <h2>Notificações</h2>
+            </div>
+            <div class="page-header-actions">
+                <a href="{% url 'mark_all_read' %}" class="btn-action-light"
+                    style="font-size: 13px; color: var(--text-secondary); text-decoration: none;">
+                    <i class="fa-solid fa-check-double"></i> Marcar todas como lidas
+                </a>
+            </div>
+        </header>
 
         <!-- Filter Tabs -->
-        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <div class="filter-container">
             <a href="?filter=all" class="filter-btn {% if current_filter == 'all' %}active{% endif %}">Todas</a>
             <a href="?filter=unread" class="filter-btn {% if current_filter == 'unread' %}active{% endif %}">Não
                 Lidas</a>
@@ -223,21 +56,28 @@
                     </div>
                 </div>
                 <div class="notif-meta">
-                    {{ n.created_at|date:"d/m/Y H:i" }}
-                    {% if not n.is_read %}<br><strong style="color:var(--accent-orange);">Novo</strong>{% endif %}
+                    <span class="notif-date">{{ n.created_at|date:"d M, H:i" }}</span>
+                    {% if not n.is_read %}
+                    <span class="status-dot"></span>
+                    {% endif %}
                 </div>
             </a>
             {% empty %}
             <div class="empty-state">
-                <i class="fa-regular fa-bell-slash" style="font-size: 40px; margin-bottom: 20px;"></i>
-                <p>Você não tem notificações.</p>
+                <div class="empty-icon-wrapper">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+                <h3>Tudo limpo por aqui!</h3>
+                <p>Você não tem novas notificações no momento.</p>
+                <a href="{% url 'meus_chamados' %}" class="btn-primary-outline"
+                    style="margin-top: 20px; display: inline-block;">
+                    Voltar para o Início
+                </a>
             </div>
             {% endfor %}
         </div>
 
     </main>
-</body>
-
 </body>
 
 </html>

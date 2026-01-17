@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -78,8 +79,23 @@ def dashboard_technical(request):
     tech = request.user
     # Todos os chamados.
     tickets = Tickets.objects.all().order_by('-opening_date')
+    # Stats
+    today = timezone.now().date()
+    today_count = tickets.filter(opening_date__date=today).count()
+    open_count = tickets.filter(status__in=['ABE', 'SEM']).count()
+    urgent_count = tickets.filter(priority__in=['URG', 'ALT']).count()
+    total_count = tickets.count()
     
-    return render(request, 'dashboard_technical.html', {'tech': tech, 'tickets': tickets})
+    context = {
+        'tech': tech, 
+        'tickets': tickets,
+        'today_count': today_count,
+        'open_count': open_count,
+        'urgent_count': urgent_count,
+        'total_count': total_count,
+    }
+    
+    return render(request, 'dashboard_technical.html', context)
 
 @login_required
 def ticket_action(request, ticket_id, action):
