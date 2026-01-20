@@ -46,7 +46,7 @@ def meus_chamados(request):
         'chamados_pendentes_count': pending_tickets,
     }
 
-    return render(request, 'dashboard.html', context)
+    return render(request, 'my_tickets.html', context)
 
 @login_required
 def ticket_detail(request, ticket_id):
