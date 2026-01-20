@@ -13,7 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-kj3+gi%lc*o5!bemh*r8ou#9s$l(1m4v018t*s805*nyk9t32%')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = 'True'
 
 ALLOWED_HOSTS = [
     'https://sistema-de-chamado.onrender.com',
