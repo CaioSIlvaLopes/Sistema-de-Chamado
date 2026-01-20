@@ -22,15 +22,12 @@
     <main class="main-content">
         <!-- Welcome Section -->
         <div class="welcome-section"
-            style="background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--text-primary); padding: 30px; border-radius: 16px; margin-bottom: 30px; position: relative; overflow: hidden; box-shadow: var(--shadow-lg);">
+            style="background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--text-primary); padding: 30px; border-radius: 16px; margin-bottom: 30px; position: relative; box-shadow: var(--shadow-lg);">
             <div style="position: relative; z-index: 2;">
                 <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 10px;">
                     Painel Técnico <span style="font-weight: 300; opacity: 0.9;">|
                         {{ user.get_full_name|default:user.username }}</span>
                 </h1>
-                <p style="opacity: 0.9; font-size: 16px; max-width: 600px;">
-                    Gerencie seus chamados, acompanhe prazos e mantenha o SLA em dia.
-                </p>
             </div>
         </div>
 
