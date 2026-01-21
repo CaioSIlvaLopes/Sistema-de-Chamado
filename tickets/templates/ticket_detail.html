@@ -14,12 +14,148 @@
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
     <link rel="stylesheet" href="{% static 'css/pages/tickets.css' %}?v=2">
     <script src="{% static 'js/mobile.js' %}" defer></script>
-</head>
+    <style>
+        /* WhatsApp Style Chat Overrides */
+        .conversation-area {
+            padding: 2px 0 0 0;
+            gap: 10px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: rgba(255, 193, 7, 0.1);
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        #chat-history {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-<!-- Inline styles removed to use dashboard.css -->
+        /* Message Bubbles */
+        .chat-row {
+            display: flex;
+            margin-bottom: 2px;
+            width: 100%;
+        }
+
+        .chat-row.other {
+            justify-content: flex-start;
+        }
+
+        .chat-row.me {
+            justify-content: flex-end;
+        }
+
+        .chat-bubble {
+            max-width: 65%;
+            padding: 6px 7px 8px 9px;
+            border-radius: 7.5px;
+            position: relative;
+            box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+            font-size: 14.2px;
+            line-height: 19px;
+            color: #111b21;
+        }
+
+        .chat-row.other .chat-bubble {
+            background: #ffffff;
+            border-top-left-radius: 0;
+        }
+
+        .chat-row.me .chat-bubble {
+            background: #d9fdd3;
+            /* WhatsApp Green */
+            border-top-right-radius: 0;
+        }
+
+        .sender-name {
+            font-size: 12.8px;
+            font-weight: 500;
+            line-height: 22px;
+            color: #e542a3;
+            /* Default random color like WA */
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .chat-row.me .sender-name {
+            display: none;
+            /* Hide my name usually */
+        }
+
+        .chat-meta {
+            float: right;
+            margin-left: 10px;
+            margin-top: 4px;
+            font-size: 11px;
+            color: #667781;
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+        }
+
+        /* Input Bar */
+        .chat-input-container {
+            background: #f0f2f5;
+            padding: 10px 16px;
+            display: flex;
+            /* Align bottom for multiline */
+            gap: 10px;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .btn-attach-icon {
+            color: #54656f;
+            font-size: 24px;
+            padding: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 5px;
+            /* Alignment fix */
+        }
+
+        .btn-attach-icon:hover {
+            color: #3b4a54;
+        }
+
+        .chat-input-wrapper {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input {
+            border: none;
+            width: 100%;
+            outline: none;
+            font-size: 15px;
+            max-height: 100px;
+            resize: none;
+            font-family: inherit;
+            overflow-y: auto;
+            margin: 0;
+            background: transparent;
+        }
+
+        .btn-send-icon {
+            color: #54656f;
+            font-size: 24px;
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <body>
 
@@ -27,24 +163,28 @@
 
     <main class="main-content">
 
-        <header>
-            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
-            <h2>Detalhes do Chamado #{{ ticket.id }}</h2>
-        </header>
-
-        <div class="breadcrumb-bar">
-            <div class="breadcrumb" style="color: var(--text-secondary); font-size: 14px;">
-                {% if is_tech %}
-                <a href="{% url 'dashboard_technical' %}"
-                    style="color: var(--text-secondary); text-decoration:none;">Painel</a>
-                {% else %}
-                <a href="{% url 'meus_chamados' %}" style="color: var(--text-secondary); text-decoration:none;">Meus
-                    Chamados</a>
-                {% endif %}
-                <i class="fa-solid fa-chevron-right" style="font-size: 10px; margin: 0 5px;"></i>
-                <span>Chamado #{{ ticket.id }}</span>
+        <header style="margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                <a href="{% if is_tech %}{% url 'dashboard_technical' %}{% else %}{% url 'meus_chamados' %}{% endif %}"
+                    style="width: 40px; height: 40px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); box-shadow: var(--shadow-soft); transition: 0.2s;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h2 style="margin: 0; font-size: 24px; font-weight: 700; color: var(--primary-color);">Chamado
+                        #{{ticket.id }}</h2>
+                    <div
+                        style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
+                        {% if is_tech %}
+                        <span>Painel</span>
+                        {% else %}
+                        <span>Meus Chamados</span>
+                        {% endif %}
+                        <i class="fa-solid fa-chevron-right" style="font-size: 10px;"></i>
+                        <span style="color: var(--accent-orange);">Detalhes</span>
+                    </div>
+                </div>
             </div>
-        </div>
+        </header>
 
         <div class="ticket-grid">
 
@@ -79,51 +219,97 @@
                 </div>
 
                 <!-- Reply Area -->
+                <!-- Reply Area -->
                 {% if ticket.status != 'FEC' %}
-                <div class="reply-box">
-                    <form id="chat-form" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <textarea name="message" class="reply-textarea"
-                            placeholder="Digite sua mensagem aqui..."></textarea>
-                        <div class="reply-actions">
-                            <div>
-                                <input type="file" name="attachment" id="chat-attachment" style="display:none;"
-                                    accept="image/*" onchange="updateFileName(this)">
-                                <label for="chat-attachment" class="btn-attach">
-                                    <i class="fa-solid fa-paperclip"></i> <span id="file-name">Anexar imagem (max
-                                        12MB)</span>
-                                </label>
-                            </div>
-                            <button type="button" class="btn-send" onclick="sendChatMessage()">
-                                <i class="fa-solid fa-paper-plane"></i> Enviar
+                <div class="chat-input-container" style="flex-direction: column; align-items: stretch; padding:0;">
+
+                    <!-- Preview Area -->
+                    <div id="preview-container"
+                        style="display:none; padding: 10px 15px; background: #e9edef; border-bottom: 1px solid #d1d7db;">
+                        <div style="position: relative; display: inline-block;">
+                            <img id="image-preview" src=""
+                                style="max-height: 150px; border-radius: 8px; border: 1px solid #ccc;">
+                            <button type="button" onclick="clearAttachment()"
+                                style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                <i class="fa-solid fa-xmark" style="font-size: 12px;"></i>
                             </button>
                         </div>
+                        <div id="file-name-preview" style="font-size: 12px; color: #54656f; margin-top: 5px;"></div>
+                    </div>
+
+                    <form id="chat-form" enctype="multipart/form-data"
+                        style="display:flex; width:100%; align-items:flex-end; gap:10px; padding: 10px 16px;">
+                        {% csrf_token %}
+
+                        <input type="file" name="attachment" id="chat-attachment" style="display:none;" accept="image/*"
+                            onchange="handleFileSelect(this)">
+                        <label for="chat-attachment" class="btn-attach-icon" title="Anexar">
+                            <i class="fa-solid fa-plus"></i>
+                        </label>
+
+                        <div class="chat-input-wrapper">
+                            <textarea name="message" class="chat-input" placeholder="Digite uma mensagem"
+                                rows="1"></textarea>
+                        </div>
+
+                        <button type="button" class="btn-send-icon" onclick="sendChatMessage()" title="Enviar">
+                            <i class="fa-solid fa-paper-plane" style="color: #54656f;"></i>
+                        </button>
                     </form>
                 </div>
                 {% else %}
-                <div class="message-card" style="text-align:center; color:#888;">
+                <div class="message-card" style="text-align:center; color:#888; margin: 20px;">
                     <em><i class="fa-solid fa-lock"></i> Este chamado foi finalizado. O chat está encerrado.</em>
                 </div>
                 {% endif %}
 
                 <script>
                     const chatHistory = document.getElementById('chat-history');
-                    // Store the last known number of messages to avoid unnecessary re-renders (simple version)
                     let lastMsgCount = -1;
 
-                    function updateFileName(input) {
-                        const span = document.getElementById('file-name');
+                    function handleFileSelect(input) {
+                        const previewContainer = document.getElementById('preview-container');
+                        const imgPreview = document.getElementById('image-preview');
+                        const fileNamePreview = document.getElementById('file-name-preview');
+
                         if (input.files && input.files[0]) {
                             const file = input.files[0];
-                            span.textContent = file.name;
-                            if (file.size > 12 * 1024 * 1024) {
-                                alert("O arquivo é muito grande! O limite é de 12MB.");
-                                input.value = "";
-                                span.textContent = "Anexar imagem (max 12MB)";
+                            const reader = new FileReader();
+
+                            reader.onload = function (e) {
+                                imgPreview.src = e.target.result;
+                                previewContainer.style.display = 'block';
+                                fileNamePreview.textContent = file.name;
                             }
-                        } else {
-                            span.textContent = "Anexar imagem (max 12MB)";
+
+                            reader.readAsDataURL(file);
                         }
+                    }
+
+                    function clearAttachment() {
+                        const input = document.getElementById('chat-attachment');
+                        const previewContainer = document.getElementById('preview-container');
+
+                        input.value = '';
+                        previewContainer.style.display = 'none';
+                    }
+
+                    // Auto-resize textarea
+                    const chatInput = document.querySelector('.chat-input');
+                    if (chatInput) {
+                        chatInput.addEventListener('input', function () {
+                            this.style.height = 'auto';
+                            this.style.height = (this.scrollHeight) + 'px';
+                            if (this.value === '') this.style.height = 'auto';
+                        });
+
+                        // Enter to send
+                        chatInput.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendChatMessage();
+                            }
+                        });
                     }
 
                     async function loadMessages() {
@@ -132,7 +318,6 @@
                             if (!response.ok) return;
                             const data = await response.json();
 
-                            // Should we re-render?
                             if (data.messages.length !== lastMsgCount) {
                                 renderMessages(data.messages);
                                 lastMsgCount = data.messages.length;
@@ -145,105 +330,104 @@
 
                     function renderMessages(messages) {
                         chatHistory.innerHTML = '';
+                        // Determine if user is technical support based on template context
+                        const isUserTech = "{{ is_tech|yesno:'true,false' }}" === "true";
 
                         messages.forEach(msg => {
-                            // Determine styling based on sender type
-                            // Based on existing CSS: Technical/Support = msg-support (blue/sidebar color key), Client = msg-client (grey)
-                            // Function logic: if sender name has "(Técnico)", it's support style? Or simpler: if msg.is_me and I am tech?
-                            // Let's rely on the string we prepared in backend or just consistent standard.
-                            // Let's use:
-                            // - msg-support: for messages from technicians
-                            // - msg-client: for messages from clients
+                            const isMsgTech = msg.sender.includes('(Técnico)');
 
-                            // Check if sender string contains (Técnico) - brittle but effective given previous view logic
-                            const isSupport = msg.sender.includes('(Técnico)');
-                            const styleClass = isSupport ? 'msg-support' : 'msg-client';
-                            const avatarClass = isSupport ? 'support-avatar' : '';
+                            // Determine if the message is from "me"
+                            let isMe = false;
+                            if (isUserTech && isMsgTech) isMe = true;
+                            if (!isUserTech && !isMsgTech) isMe = true;
+
+                            const rowClass = isMe ? 'me' : 'other';
+                            const senderName = msg.sender;
+                            const time = msg.timestamp.split(',')[1] || msg.timestamp;
 
                             let attachmentHtml = '';
                             if (msg.attachment_url) {
+                                // Use the dedicated view URL if available, otherwise raw
+                                // Can't remove target=_blank if it's raw file (user might want to download), 
+                                // but with wrapper we want same tab.
+                                const linkUrl = msg.attachment_view_url || msg.attachment_url;
+                                const targetAttr = msg.attachment_view_url ? '' : 'target="_blank"';
+
                                 attachmentHtml = `
-                    <div style="margin-top:10px;">
-                        <a href="${msg.attachment_url}" target="_blank">
-                            <img src="${msg.attachment_url}" style="max-height:200px; width:auto; border-radius:8px; border:1px solid #ddd;">
-                        </a>
-                    </div>`;
+                                    <div style="margin-top:5px; margin-bottom:5px;">
+                                        <a href="${linkUrl}" ${targetAttr}>
+                                            <img src="${msg.attachment_url}" style="max-height:200px; max-width:100%; border-radius:6px;">
+                                        </a>
+                                    </div>`;
                             }
 
                             const messageText = msg.message ? msg.message.replace(/\n/g, '<br>') : '';
 
                             const html = `
-            <div class="message-card ${styleClass}">
-                <div class="msg-header">
-                    <div class="user-info">
-                        <div class="avatar-small ${avatarClass}">
-                            <i class="fa-solid fa-user${isSupport ? '-tie' : ''}"></i>
-                        </div>
-                        <div>
-                            <div class="user-name">${msg.sender}</div>
-                            <div style="font-size:11px; color:#888;">${isSupport ? 'Técnico' : 'Cliente'}</div>
-                        </div>
-                    </div>
-                    <div class="msg-date">${msg.timestamp}</div>
-                </div>
-                <div class="msg-body">
-                    ${messageText}
-                    ${attachmentHtml}
-                </div>
-            </div>`;
+                                <div class="chat-row ${rowClass}">
+                                    <div class="chat-bubble">
+                                        <span class="sender-name" style="color: ${getStringColor(senderName)}">${senderName}</span>
+                                        <div class="message-content">
+                                            ${messageText}
+                                            ${attachmentHtml}
+                                            <span class="chat-meta">${time}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
 
                             chatHistory.insertAdjacentHTML('beforeend', html);
                         });
+
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }
+
+                    function getStringColor(str) {
+                        let hash = 0;
+                        for (let i = 0; i < str.length; i++) {
+                            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                        }
+                        const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+                        return '#' + "00000".substring(0, 6 - c.length) + c;
                     }
 
                     async function sendChatMessage() {
                         const form = document.getElementById('chat-form');
-                        const formData = new FormData(form);
+                        if (!form) return;
 
-                        // Basic validation
+                        const formData = new FormData(form);
                         const msg = formData.get('message').trim();
-                        const file = formData.get('attachment');
-                        if (!msg && (!file || file.size === 0)) {
+                        const fileInput = document.getElementById('chat-attachment');
+
+                        if (!msg && (!fileInput.files.length)) {
                             return;
                         }
 
-                        const btn = document.querySelector('.btn-send');
-                        const originalText = btn.innerHTML;
-                        btn.disabled = true;
-                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
+                        // Send logic
                         try {
-                            // Need CSRF token for fetch POST if not in form
                             const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
                             const response = await fetch("{% url 'send_chat_message' ticket.id %}", {
                                 method: 'POST',
                                 body: formData,
-                                headers: {
-                                    'X-CSRFToken': csrftoken
-                                }
+                                headers: { 'X-CSRFToken': csrftoken }
                             });
                             const data = await response.json();
 
                             if (data.status === 'ok') {
-                                document.querySelector('.reply-textarea').value = '';
-                                document.getElementById('chat-attachment').value = '';
-                                document.getElementById('file-name').textContent = "Anexar imagem (max 12MB)";
-                                lastMsgCount = -1; // Force reload
+                                document.querySelector('.chat-input').value = '';
+                                document.querySelector('.chat-input').style.height = 'auto'; // Reset height
+                                clearAttachment(); // Clear file input and preview
+                                lastMsgCount = -1;
                                 loadMessages();
                             } else {
-                                alert('Erro ao enviar: ' + (data.error || 'Desconhecido'));
+                                alert('Erro: ' + (data.error || 'Desconhecido'));
                             }
                         } catch (e) {
-                            alert('Erro de conexão ao enviar mensagem.');
                             console.error(e);
-                        } finally {
-                            btn.disabled = false;
-                            btn.innerHTML = originalText;
                         }
                     }
 
-                    // Load immediately and then poll
+                    // Init
                     loadMessages();
                     setInterval(loadMessages, 3000); 
                 </script>
@@ -253,11 +437,14 @@
             <!-- SIDEBAR INFO -->
             <div class="info-sidebar">
 
-                <div class="card" style="margin-bottom: 20px;">
-                    <div class="card-header" style="margin-bottom: 15px;">Detalhes do Chamado</div>
+                <div class="card" style="margin-bottom: 20px; padding: 25px;">
+                    <div class="card-header"
+                        style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; font-weight: 700; color: var(--primary-color);">
+                        DETALHES DO CHAMADO</div>
 
-                    <div class="info-row">
-                        <span class="info-label">Status:</span>
+                    <div class="info-row" style="margin-bottom: 15px;">
+                        <span class="info-label"
+                            style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Status</span>
                         {% if ticket.status == 'SEM' %}<span class="badge"
                             style="background:var(--input-border); color:var(--text-secondary);">Pendente</span>
                         {% elif ticket.status == 'ABE' %}<span class="badge badge-open">Em Andamento</span>
@@ -265,33 +452,36 @@
                         {% endif %}
                     </div>
 
-                    <div class="info-row">
-                        <span class="info-label">Prioridade:</span>
+                    <div class="info-row" style="margin-bottom: 15px;">
+                        <span class="info-label"
+                            style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Prioridade</span>
                         {% if ticket.priority == 'URG' or ticket.priority == 'ALT' %}
-                        <span class="badge" style="background: rgba(231, 76, 60, 0.1); color: var(--status-high);">{{
-                            ticket.get_priority_display }}</span>
+                        <span class="badge"
+                            style="background: rgba(231, 76, 60, 0.1); color: var(--status-high);">{{ticket.get_priority_display}}</span>
                         {% elif ticket.priority == 'BAX' or ticket.priority == 'MED' %}
-                        <span class="badge" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">{{
-                            ticket.get_priority_display }}</span>
+                        <span class="badge"
+                            style="background: rgba(52, 152, 219, 0.1); color: #3498db;">{{ticket.get_priority_display}}</span>
                         {% else %}
                         <span class="badge badge-open">{{ ticket.get_priority_display }}</span>
                         {% endif %}
                     </div>
 
-                    <!-- Deparment removed as per new model -->
-
-                    <div class="info-row">
-                        <span class="info-label">Categoria:</span>
-                        <span class="info-value">{{ ticket.category.name }}</span>
+                    <div class="info-row" style="margin-bottom: 15px;">
+                        <span class="info-label"
+                            style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Categoria</span>
+                        <span class="info-value"
+                            style="font-weight: 600; color: var(--text-primary);">{{ticket.category.name }}</span>
                     </div>
 
                     {% if ticket.sla_response_due_at or ticket.sla_resolution_due_at %}
-                    <div style="border-top:1px solid #eee; margin:10px 0; padding-top:10px;">
+                    <div style="border-top:1px solid #f1f5f9; margin:15px 0; padding-top:15px;">
                         {% if ticket.sla_resolution_due_at %}
                         <div class="info-row">
-                            <span class="info-label" style="font-size:12px;">SLA Resolução:</span>
+                            <span class="info-label"
+                                style="font-size:11px; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 5px;">SLA
+                                Resolução</span>
                             <span class="info-value"
-                                style="font-size:12px; font-family:monospace; font-weight:bold; color:var(--accent-orange);"
+                                style="font-size:18px; font-family:'Courier New', monospace; font-weight:bold; color:var(--accent-orange); letter-spacing: 1px;"
                                 id="sla-resolution-timer" data-seconds="{{ sla_resolution_seconds }}"
                                 data-stopped="{% if ticket.status == 'FEC' %}true{% else %}false{% endif %}">
                                 --:--:--
@@ -349,11 +539,13 @@
 
 
                     <div class="info-row">
-                        <span class="info-label">Anexo: </span>
+                        <span class="info-label"
+                            style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Anexo</span>
                         <span class="info-value">
                             {% if ticket.attachment %}
-                            <a href="{{ ticket.attachment.url }}" target="_blank" style="color:var(--accent-orange);">
-                                <i class="fa-solid fa-paperclip"></i> Visualizar
+                            <a href="{{ ticket.attachment.url }}" target="_blank"
+                                style="color:var(--accent-orange); text-decoration: none; font-weight: 500;">
+                                <i class="fa-solid fa-paperclip"></i> Visualizar Anexo
                             </a>
                             {% else %}
                             <span style="color:#ccc;">Nenhum</span>
@@ -362,21 +554,33 @@
                     </div>
                 </div>
 
-                <div class="card" style="margin-bottom: 20px;">
-                    <div class="card-header" style="margin-bottom: 15px;">Atribuição</div>
+                <div class="card" style="margin-bottom: 20px; padding: 25px;">
+                    <div class="card-header"
+                        style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; font-weight: 700; color: var(--primary-color);">
+                        ATRIBUIÇÃO</div>
 
                     <div class="info-row">
-                        <span class="info-label">Técnico:</span>
+                        <span class="info-label"
+                            style="display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase;">Técnico
+                            Responsável</span>
                         <span class="info-value">
                             {% if is_tech and ticket.attributed_to.id != tech.id and ticket.attributed_to %}
-                            <div style="text-align:center; font-size:12px; color:#888;">
+                            <div style="text-align:center; font-size:12px; color:#888; margin-bottom: 5px;">
                                 Este chamado está com outro técnico.
                             </div>
                             {% endif %}
+
                             {% if ticket.attributed_to %}
-                            {{ ticket.attributed_to.display_name|default:ticket.attributed_to.username }}
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div
+                                    style="width: 30px; height: 30px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #64748b;">
+                                    {{ticket.attributed_to.display_name|default:ticket.attributed_to.username|slice:":1"|upper}}
+                                </div>
+                                <span
+                                    style="font-weight: 600; color: var(--text-primary);">{{ticket.attributed_to.display_name|default:ticket.attributed_to.username}}</span>
+                            </div>
                             {% else %}
-                            <span style="color:#ccc;">-- Pendente --</span>
+                            <span style="color:#94a3b8; font-style: italic;">-- Aguardando Atribuição --</span>
                             {% endif %}
                         </span>
                     </div>
@@ -384,25 +588,28 @@
 
                 <!-- Ações para Técnico -->
                 {% if is_tech %}
-                <div class="card">
-                    <div class="card-header" style="margin-bottom: 15px;">Ações do Técnico</div>
+                <div class="card" style="padding: 25px;">
+                    <div class="card-header"
+                        style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; font-weight: 700; color: var(--primary-color);">
+                        AÇÕES</div>
 
                     {% if not ticket.attributed_to and ticket.status != 'FEC' %}
                     <a href="{% url 'ticket_action' ticket.id 'receive' %}" class="action-btn"
-                        style="color:#2ecc71; border-color:#2ecc71;">
+                        style="color:#2ecc71; border: 1px solid #2ecc71; padding: 10px; border-radius: 8px; display: block; text-align: center; text-decoration: none; font-weight: 600; transition: 0.2s;">
                         <i class="fa-solid fa-hand-holding-hand"></i> Assumir Chamado
                     </a>
                     {% endif %}
 
                     {% if ticket.attributed_to.id == tech.id and ticket.status != 'FEC' %}
-                    <a href="{% url 'ticket_action' ticket.id 'finalize' %}" class="action-btn btn-close">
+                    <a href="{% url 'ticket_action' ticket.id 'finalize' %}" class="action-btn btn-close"
+                        style="background: #e74c3c; color: white; padding: 10px; border-radius: 8px; display: block; text-align: center; text-decoration: none; font-weight: 600; transition: 0.2s;">
                         <i class="fa-solid fa-check"></i> Finalizar Chamado
                     </a>
                     {% endif %}
 
                     {% if ticket.attributed_to.id != tech.id and ticket.attributed_to %}
                     <div style="text-align:center; font-size:12px; color:#888;">
-                        Este chamado está com outro técnico.
+                        Nenhuma ação disponível.
                     </div>
                     {% endif %}
                 </div>

@@ -234,8 +234,36 @@
         grid-template-columns: 1fr;
     }
 
-    .ticket-info-sidebar {
-        order: -1;
-        /* Show info on top on mobile? Or bottom? Default is bottom. */
+    /* .ticket-info-sidebar {
+        Default order (0) places it below conversation-area in the grid flow
+    } */
+}
+
+@media (max-width: 576px) {
+    .conversation-area {
+        padding: 20px;
+    }
+
+    .message-card {
+        padding: 15px;
+    }
+
+    .reply-actions {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .btn-attach {
+        justify-content: center;
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px dashed #ced4da;
+    }
+
+    .btn-send {
+        justify-content: center;
+        width: 100%;
     }
 }

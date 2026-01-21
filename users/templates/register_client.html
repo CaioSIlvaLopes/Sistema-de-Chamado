@@ -48,7 +48,8 @@
                     <label for="display_name" class="input-label">Nome Completo</label>
                     <div class="input-wrapper">
                         <input id="display_name" type="text" name="display_name" class="form-control"
-                            placeholder="Seu nome completo" value="{{ form.display_name.value|default:'' }}" required>
+                            placeholder="Seu nome completo" value="{{ form.display_name.value|default:'' }}" required
+                            autocomplete="name">
                         <i class="fa-solid fa-user input-icon"></i>
                     </div>
                     {% if form.display_name.errors %}
@@ -61,7 +62,8 @@
                     <label for="username" class="input-label">Nome de Usuário</label>
                     <div class="input-wrapper">
                         <input id="username" type="text" name="username" class="form-control"
-                            placeholder="Seu usuário de acesso" value="{{ form.username.value|default:'' }}" required>
+                            placeholder="Seu usuário de acesso" value="{{ form.username.value|default:'' }}" required
+                            autocomplete="username">
                         <i class="fa-solid fa-id-badge input-icon"></i>
                     </div>
                     {% if form.username.errors %}
@@ -94,7 +96,7 @@
                     <label for="email" class="input-label">E-mail</label>
                     <div class="input-wrapper">
                         <input id="email" type="email" name="email" class="form-control" placeholder="seu@email.com"
-                            value="{{ form.email.value|default:'' }}" required>
+                            value="{{ form.email.value|default:'' }}" required autocomplete="email">
                         <i class="fa-solid fa-envelope input-icon"></i>
                     </div>
                     {% if form.email.errors %}
@@ -104,19 +106,19 @@
 
                 <!-- Senha -->
                 <!-- Senha -->
+                <!-- Senha -->
                 <div class="input-group">
                     <label for="password" class="input-label">Senha</label>
                     <div class="input-wrapper">
-                        <input id="password" type="password" name="password1" class="form-control"
-                            placeholder="Crie uma senha" required>
+                        <input id="password" type="password" name="password1" class="form-control password-input"
+                            placeholder="Crie uma senha" required autocomplete="new-password">
                         <i class="fa-solid fa-lock input-icon"></i>
+                        <i class="fa-solid fa-eye toggle-password" data-target="password"></i>
                     </div>
                     {% if form.password1.errors %}
-                    <span style="color: #e74c3c; font-size: 12px; margin-top: 5px; display: block;">{{
-                        form.password1.errors.0 }}</span>
+                    <span class="error-text">{{ form.password1.errors.0 }}</span>
                     {% elif form.errors.password1 %}
-                    <span style="color: #e74c3c; font-size: 12px; margin-top: 5px; display: block;">{{
-                        form.errors.password1.0 }}</span>
+                    <span class="error-text">{{ form.errors.password1.0 }}</span>
                     {% endif %}
                 </div>
 
@@ -124,26 +126,26 @@
                 <div class="input-group">
                     <label for="password_confirm" class="input-label">Confirme sua senha</label>
                     <div class="input-wrapper">
-                        <input id="password_confirm" type="password" name="password2" class="form-control"
-                            placeholder="Repita a senha" required>
+                        <input id="password_confirm" type="password" name="password2"
+                            class="form-control password-input" placeholder="Repita a senha" required
+                            autocomplete="new-password">
                         <i class="fa-solid fa-lock input-icon"></i>
+                        <i class="fa-solid fa-eye toggle-password" data-target="password_confirm"></i>
                     </div>
                     {% if form.password2.errors %}
-                    <span style="color: #e74c3c; font-size: 12px; margin-top: 5px; display: block;">{{
-                        form.password2.errors.0 }}</span>
+                    <span class="error-text">{{ form.password2.errors.0 }}</span>
                     {% elif form.errors.password2 %}
-                    <span style="color: #e74c3c; font-size: 12px; margin-top: 5px; display: block;">{{
-                        form.errors.password2.0 }}</span>
+                    <span class="error-text">{{ form.errors.password2.0 }}</span>
                     {% endif %}
                 </div>
 
-                <!-- Is Technician Checkbox -->
-                <div class="input-group" style="flex-direction: row; align-items: center; gap: 10px;">
-                    <div class="input-wrapper" style="width: auto;">
+                <!-- Tipo de Conta (Is Technician) -->
+                <div class="input-group">
+                    <label for="{{ form.is_technician.id_for_label }}" class="input-label">Tipo de Conta</label>
+                    <div class="input-wrapper">
                         {{ form.is_technician }}
+                        <i class="fa-solid fa-users-gear input-icon"></i>
                     </div>
-                    <label for="{{ form.is_technician.id_for_label }}" class="input-label" style="margin-bottom: 0;">Sou
-                        Técnico</label>
                 </div>
 
                 <div class="input-group">
@@ -158,6 +160,23 @@
                 <a href="{% url 'login_client' %}" class="auth-link">Fazer Login</a>
             </div>
         </div>
+
+        <script>
+            document.querySelectorAll('.toggle-password').forEach(icon => {
+                icon.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+
+                    if (input) {
+                        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                        input.setAttribute('type', type);
+
+                        this.classList.toggle('fa-eye');
+                        this.classList.toggle('fa-eye-slash');
+                    }
+                });
+            });
+        </script>
     </div>
 
 </body>

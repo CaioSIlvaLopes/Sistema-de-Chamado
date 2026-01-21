@@ -19,56 +19,128 @@
     {% include 'partials/sidebar.html' %}
 
     <main class="main-content">
-        <header>
-            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
-            <h2>Meus Chamados</h2>
+        <header
+            style="display: flex; justify-content: center; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+                <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: var(--primary-color);">Meus Chamados
+                </h2>
+            </div>
+
+            <div class="header-actions">
+                <form method="GET" action="." style="margin: 0;">
+                    <div class="input-wrapper" style="width: 250px; position: relative;">
+                        <input type="text" name="q" class="form-control" placeholder="Buscar ID ou Categoria.."
+                            value="{{ query|default:'' }}"
+                            style="padding: 10px 15px 10px 40px; font-size: 14px; height: 45px;">
+                        <i class="fa-solid fa-magnifying-glass input-icon"
+                            style="left: 15px; font-size: 14px; color: #94a3b8;"></i>
+                    </div>
+                </form>
+                <a href="{% url 'novo_ticket' %}" class="btn-submit"
+                    style="text-decoration: none; padding: 10px 25px; font-size: 14px; height: 45px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-plus"></i> Novo Chamado
+                </a>
+            </div>
         </header>
 
         {% if chamados %}
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>SLA Resolução</th>
-                        <th>Categoria</th>
-                        <th>Status</th>
-                        <th>Prioridade</th>
-                        <th>Abertura</th>
-                        <th>Técnico</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ticket in chamados %}
-                    <tr>
-                        <td>{{ ticket.id }}</td>
-                        <td>
-                            {% if ticket.sla_resolution_due_at %}
-                            {{ ticket.sla_resolution_due_at|date:"d/m/Y H:i" }}
-                            {% else %}
-                            -
-                            {% endif %}
-                        </td>
-                        <td>{{ ticket.category.name }}</td>
-                        <td>{{ ticket.get_status_display }}</td>
-                        <td>{{ ticket.get_priority_display }}</td>
-                        <td>{{ ticket.opening_date|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            {% if ticket.attributed_to %}
-                            {{ ticket.attributed_to.display_name|default:ticket.attributed_to.username }}
-                            {% else %}
-                            <span>--Pendente--</span>
-                            {% endif %}
-                        </td>
-                        <td><a href="{% url 'detail_chamado' ticket.id %}" class="view-btn">Ver</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="card" style="padding: 0; overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+            <div class="table-responsive">
+                <table style="margin-top: 0; box-shadow: none; border-radius: 0;">
+                    <thead style="background: #f8fafc; border-bottom: 2px solid #eaedf0;">
+                        <tr>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">ID</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">SLA Resolução</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">Categoria</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">Status</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">Prioridade</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">Abertura</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">Técnico</th>
+                            <th style="color: #64748b; font-weight: 600; background: transparent;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in chamados %}
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="font-weight: 500; color: var(--primary-color);">#{{ ticket.id }}</td>
+                            <td>
+                                {% if ticket.sla_resolution_due_at %}
+                                <span style="font-size: 13px; color: #475569;">
+                                    {{ ticket.sla_resolution_due_at|date:"d/m/Y" }}
+                                    <small style="color: #94a3b8;">{{ ticket.sla_resolution_due_at|date:"H:i" }}</small>
+                                </span>
+                                {% else %}
+                                <span style="color: #cbd5e1;">-</span>
+                                {% endif %}
+                            </td>
+                            <td><span
+                                    style="padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; color: #475569;">
+                                    {{ticket.category }}</span></td>
+                            <td>
+                                {% if ticket.status == 'ABE' %}
+                                <span class="badge badge-open">Aberto</span>
+                                {% elif ticket.status == 'FEC' %}
+                                <span class="badge badge-closed">Fechado</span>
+                                {% else %}
+                                <span class="badge badge-pending">Pendente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ticket.priority == 'URG' or ticket.priority == 'ALT' %}
+                                <span class="priority-dot priority-high"></span> {{ ticket.get_priority_display }}
+                                {% elif ticket.priority == 'MED' %}
+                                <span class="priority-dot priority-med"></span> {{ ticket.get_priority_display }}
+                                {% elif ticket.priority == 'BAX' %}
+                                <span class="priority-dot priority-low"></span> {{ ticket.get_priority_display }}
+                                {% else %}
+                                <span class="priority-dot" style="background: #cbd5e1;"></span> {{
+                                ticket.get_priority_display }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span style="font-size: 13px; color: #475569;">
+                                    {{ ticket.opening_date|date:"d/m/Y" }}
+                                    <small style="color: #94a3b8;">{{ ticket.opening_date|date:"H:i" }}</small>
+                                </span>
+                            </td>
+                            <td>
+                                {% if ticket.attributed_to %}
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <div
+                                        style="width: 24px; height: 24px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #64748b; font-weight: 600;">
+                                        {{ticket.attributed_to.display_name|default:ticket.attributed_to.username|slice:":1"|upper}}
+                                    </div>
+                                    <span
+                                        style="font-size: 13px;">{{ticket.attributed_to.display_name|default:ticket.attributed_to.username}}</span>
+                                </div>
+                                {% else %}
+                                <span style="color: #94a3b8; font-style: italic; font-size: 13px;">-- Pendente --</span>
+                                {% endif %}
+                            </td>
+                            <td><a href="{% url 'detail_chamado' ticket.id %}" class="view-btn"
+                                    style="box-shadow: none; border: 1px solid #e2e8f0; background: white; color: #475569; padding: 6px 14px;">Detalhes</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
         {% else %}
-        <p>Você ainda não abriu nenhum chamado.</p>
+        <div class="empty-state"
+            style="text-align: center; padding: 50px 20px; background: white; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+            <div
+                style="background: #f0f4f8; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="fa-solid fa-ticket" style="font-size: 30px; color: #10243e;"></i>
+            </div>
+            <h3 style="font-size: 20px; color: #333; margin-bottom: 10px;">Nenhum chamado encontrado</h3>
+            <p style="color: #64748b; margin-bottom: 25px;">Você ainda não abriu nenhuma solicitação de suporte.</p>
+            <a href="{% url 'create_ticket' %}" class="btn-submit"
+                style="text-decoration: none; display: inline-block;">
+                <i class="fa-solid fa-plus"></i> Abrir Novo Chamado
+            </a>
+        </div>
         {% endif %}
 
     </main>

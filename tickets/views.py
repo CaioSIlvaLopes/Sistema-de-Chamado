@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Tickets
 from .forms import TicketForm
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db.models.functions import ExtractMonth
 import datetime
 
@@ -31,6 +31,15 @@ def novo_ticket(request):
 def meus_chamados(request):
     chamados = Tickets.objects.filter(opened_by=request.user).order_by('-opening_date')
     
+    # Search logic
+    query = request.GET.get('q')
+    if query:
+        chamados = chamados.filter(
+            Q(id__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        )
+    
     # Dashboard Stats
     total_tickets = chamados.count()
     open_tickets = chamados.filter(status='ABE').count()
@@ -44,6 +53,7 @@ def meus_chamados(request):
         'chamados_abertos_count': open_tickets,
         'chamados_resolvidos_count': resolved_tickets,
         'chamados_pendentes_count': pending_tickets,
+        'query': query,
     }
 
     return render(request, 'my_tickets.html', context)
@@ -89,8 +99,7 @@ def ticket_detail(request, ticket_id):
         'tech': user if is_tech else None,
         'client': user if not is_tech else None,
         'opened_by': opened_by,
-        # 'departamento': ... removed as Account does not have department
-        'categoria': ticket.category,
+        'category': ticket.category,
         'sla_response_seconds': sla_response_seconds,
         'sla_resolution_seconds': sla_resolution_seconds,
     }

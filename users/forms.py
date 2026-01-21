@@ -15,3 +15,10 @@ class AccountRegisterForm(UserCreationForm):
             'enterprise', 
             'is_technician'
         ]
+
+    is_technician = forms.TypedChoiceField(
+        choices=[(False, 'Usuário (Cliente)'), (True, 'Técnico de Suporte')],
+        coerce=lambda x: x == 'True',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Tipo de Conta'
+    )

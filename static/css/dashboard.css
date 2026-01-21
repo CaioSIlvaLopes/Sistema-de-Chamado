@@ -940,6 +940,13 @@ textarea.form-control {
     transform: translateY(-2px);
 }
 
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
 /* --- RESPONSIVE DESIGN --- */
 
 /* Tablet & Mobile (max-width: 991px) */
@@ -1020,7 +1027,7 @@ textarea.form-control {
         align-items: center;
         gap: 15px;
         flex-direction: row-reverse;
-        justify-content: space-between;
+        justify-content: center;
     }
 
     header h2 {
@@ -1028,6 +1035,8 @@ textarea.form-control {
         margin: 0;
         color: #333;
     }
+
+
 
     .mobile-menu-toggle {
         display: block !important;
@@ -1122,6 +1131,17 @@ textarea.form-control {
 
     table {
         min-width: 600px;
+    }
+}
+
+
+/* Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-direction: column;
     }
 }
 

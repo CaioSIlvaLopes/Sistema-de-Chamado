@@ -41,7 +41,7 @@
                     <label for="login" class="input-label">Login</label>
                     <div class="input-wrapper">
                         <input type="text" name="login" id="login" class="form-control" placeholder="Digite seu login"
-                            required>
+                            required autocomplete="username">
                         <i class="fa-solid fa-user input-icon"></i>
                     </div>
                 </div>
@@ -49,9 +49,10 @@
                 <div class="input-group">
                     <label for="password" class="input-label">Senha</label>
                     <div class="input-wrapper">
-                        <input type="password" name="password" id="password" class="form-control"
-                            placeholder="Digite sua senha" required>
+                        <input type="password" name="password" id="password" class="form-control password-input"
+                            placeholder="Digite sua senha" required autocomplete="current-password">
                         <i class="fa-solid fa-lock input-icon"></i>
+                        <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
                     </div>
                 </div>
 
@@ -65,6 +66,21 @@
                 </div>
             </form>
         </div>
+
+        <script>
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+
+            togglePassword.addEventListener('click', function (e) {
+                // toggle the type attribute
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                // toggle the eye icon
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        </script>
     </div>
 
 </body>
