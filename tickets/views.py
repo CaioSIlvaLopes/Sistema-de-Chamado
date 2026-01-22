@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Tickets
+from .models import Tickets, Notification
 from .forms import TicketForm
 from django.db.models import Count, Q
 from django.db.models.functions import ExtractMonth
 import datetime
+from django.contrib.auth import get_user_model
 
 @login_required
 def novo_ticket(request):
@@ -13,18 +14,58 @@ def novo_ticket(request):
         if form.is_valid():
             ticket = form.save(commit=False)
             ticket.opened_by = request.user
+            
+            if request.user.is_technician:
+                attributed_id = request.POST.get('attributed_to')
+                if attributed_id:
+                    ticket.attributed_to_id = attributed_id
+                    ticket.status = 'ABE' # Define como Aberto se já foi atribuído
+
             ticket.save()
+
+            User = get_user_model()
+            
+            # Logic for notifications
+            if request.user.is_technician and ticket.attributed_to_id:
+                # Case 1: Tech assigned a specific tech
+                recipient = User.objects.get(id=ticket.attributed_to_id)
+                Notification.objects.create(
+                    recipient=recipient,
+                    ticket=ticket,
+                    title="Novo Chamado Atribuído",
+                    message=f"O técnico {request.user.display_name or request.user.username} atribuiu o chamado #{ticket.id} a você."
+                )
+            elif not ticket.attributed_to_id:
+                # Case 2: Unassigned ticket (Client created OR Tech created without assignment)
+                # Notify ALL technicians except the creator
+                techs = User.objects.filter(is_technician=True).exclude(id=request.user.id)
+                for tech in techs:
+                    Notification.objects.create(
+                        recipient=tech,
+                        ticket=ticket,
+                        title="Novo Chamado Aberto",
+                        message=f"Novo chamado #{ticket.id} aberto por {request.user.display_name or request.user.username}."
+                    )
+
+            if request.user.is_technician:
+                return redirect('dashboard_technical')
             return redirect('mensagem_de_sucesso', ticket_id=ticket.id)
     else:
         form = TicketForm()
 
+    context = {
+        'form': form,
+        'client': request.user
+    }
+
+    if request.user.is_technician:
+        User = get_user_model()
+        context['technicians'] = User.objects.filter(is_technician=True)
+
     return render(
         request,
         'new_ticket.html',
-        {
-            'form': form,
-            'client': request.user
-        }
+        context
     )
     
 @login_required

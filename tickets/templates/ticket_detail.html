@@ -17,12 +17,15 @@
     <style>
         /* WhatsApp Style Chat Overrides */
         .conversation-area {
-            padding: 2px 0 0 0;
-            gap: 10px;
+            padding: 0;
+            gap: 0;
+            /* Remove gap to flush input */
             display: flex;
             flex-direction: column;
             position: relative;
             background-color: rgba(255, 193, 7, 0.1);
+            height: 75vh;
+            overflow: hidden;
         }
 
         #chat-history {
@@ -31,6 +34,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            flex: 1;
         }
 
         /* Message Bubbles */
@@ -214,7 +218,7 @@
                 </div>
 
                 <!-- Chat History Container -->
-                <div id="chat-history" class="conversation-area" style="margin-top:0;">
+                <div id="chat-history" style="margin-top:0;">
                     <!-- Messages will be loaded here -->
                 </div>
 

@@ -48,7 +48,11 @@
                 class="notification-card {% if not n.is_read %}unread{% else %}read{% endif %}">
                 <div class="notif-content">
                     <div class="notif-icon">
+                        {% if n.ticket %}
+                        <i class="fa-solid fa-ticket"></i>
+                        {% else %}
                         <i class="fa-solid fa-message"></i>
+                        {% endif %}
                     </div>
                     <div class="notif-texts">
                         <div class="notif-title">{{ n.title }}</div>

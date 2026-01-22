@@ -20,7 +20,7 @@
 
     <main class="main-content">
         <header
-            style="display: flex; justify-content: center; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <i class="fa-solid fa-bars mobile-menu-toggle"></i>
                 <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: var(--primary-color);">Meus Chamados
@@ -136,8 +136,7 @@
             </div>
             <h3 style="font-size: 20px; color: #333; margin-bottom: 10px;">Nenhum chamado encontrado</h3>
             <p style="color: #64748b; margin-bottom: 25px;">Você ainda não abriu nenhuma solicitação de suporte.</p>
-            <a href="{% url 'create_ticket' %}" class="btn-submit"
-                style="text-decoration: none; display: inline-block;">
+            <a href="{% url 'novo_ticket' %}" class="btn-submit" style="text-decoration: none; display: inline-block;">
                 <i class="fa-solid fa-plus"></i> Abrir Novo Chamado
             </a>
         </div>

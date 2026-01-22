@@ -47,6 +47,22 @@
                     </div>
                 </div>
 
+                {% if request.user.is_technician %}
+                <!-- Atribuir a (Apenas Técnicos) -->
+                <div class="input-group">
+                    <label>Atribuir a (Opcional)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-tag"></i>
+                        <select name="attributed_to" class="form-control">
+                            <option value="" selected>-- Sem atribuição --</option>
+                            {% for tech in technicians %}
+                            <option value="{{ tech.id }}">{{ tech.display_name|default:tech.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Prioridade -->
                 <div class="input-group">
                     <label>Prioridade <span>*</span></label>
