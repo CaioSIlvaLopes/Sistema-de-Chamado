@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifique seu Email - Sistema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}?v=2">
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card" style="text-align: center;">
+            <div class="auth-icon">
+                <i class="fa-solid fa-envelope-circle-check" style="font-size: 50px; color: var(--primary-color);"></i>
+            </div>
+            <h2 style="margin-top: 20px;">Verifique seu Email</h2>
+            <p style="color: #666; margin-bottom: 25px;">
+                Enviamos um link de confirmação para o seu endereço de email.
+                <br>
+                Por favor, verifique sua caixa de entrada (e spam) para ativar sua conta.
+            </p>
+
+            <div class="auth-actions">
+                <a href="{% url 'login_client' %}" class="btn-primary-outline">
+                    Voltar para Login
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -38,6 +38,9 @@ INSTALLED_APPS = [
 LOGIN_REDIRECT_URL = 'meus_chamados' # Adjust as needed
 LOGOUT_REDIRECT_URL = 'login_client'
 
+# Email Configuration (Console Backend for Development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Celery Configuration (Example - Adjust for user env if needed)
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']

@@ -18,13 +18,43 @@
 <body>
     {% include 'partials/sidebar.html' %}
 
+    <style>
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: nowrap;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        @media (max-width: 991px) {
+            .btn-text {
+                display: none;
+            }
+
+            .header-actions .btn-submit {
+                padding: 0 !important;
+                width: 45px;
+                justify-content: center;
+            }
+
+            .header-actions {
+                gap: 10px;
+                flex-direction: row !important;
+            }
+        }
+    </style>
+
     <main class="main-content">
-        <header
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
-            <div style="display: flex; align-items: center; gap: 15px;">
+        <header>
+            <div>
                 <i class="fa-solid fa-bars mobile-menu-toggle"></i>
-                <h2 style="margin: 0; font-size: 26px; font-weight: 700; color: var(--primary-color);">Meus Chamados
-                </h2>
             </div>
 
             <div class="header-actions">
@@ -39,7 +69,7 @@
                 </form>
                 <a href="{% url 'novo_ticket' %}" class="btn-submit"
                     style="text-decoration: none; padding: 10px 25px; font-size: 14px; height: 45px; display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-plus"></i> Novo Chamado
+                    <i class="fa-solid fa-plus"></i> <span class="btn-text">Novo Chamado</span>
                 </a>
             </div>
         </header>

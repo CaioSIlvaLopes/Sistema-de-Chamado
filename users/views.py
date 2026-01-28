@@ -33,17 +33,96 @@ def logout_view(request):
 
 
 
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import get_user_model
+from .tokens import account_activation_token
+
 def register(request):
     if request.method == 'POST':
+        print("DEBUG: Register POST request received")
         form = AccountRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            messages.success(request, 'Conta criada com sucesso! Faça login.')
-            return redirect('login_client')
+            print("DEBUG: Form is valid")
+            user = form.save(commit=False)
+            user.is_active = False # Deactivate user until email is confirmed
+            user.email_confirmed = False
+            user.save()
+            print(f"DEBUG: User {user.username} created (inactive)")
+
+            # Email Confirmation Logic
+            current_site = get_current_site(request)
+            mail_subject = 'Ative sua conta - Sistema de Chamados'
+            
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = account_activation_token.make_token(user)
+            print(f"DEBUG: Generated UID for link: {uid}")
+            print(f"DEBUG: Generated Token for link: {token}")
+            
+            # Simple text message for now, or use a template
+            activation_link = f"http://{current_site.domain}/users/activate/{uid}/{token}/"
+            message = f"Olá {user.username},\n\nPor favor, clique no link abaixo para confirmar seu cadastro:\n\n{activation_link}\n\nObrigado!"
+            
+            print(f"\nDEBUG: --- CLICK THIS LINK TO ACTIVATE ---")
+            print(f"{activation_link}")
+            print(f"DEBUG: -----------------------------------\n")
+
+            to_email = form.cleaned_data.get('email')
+            print(f"DEBUG: Preparing to send email to {to_email}")
+            email = EmailMessage(
+                mail_subject, message, to=[to_email]
+            )
+            try:
+                email.send()
+                print("DEBUG: Email sent successfully via ConsoleBackend")
+            except Exception as e:
+                print(f"DEBUG: Error sending email: {e}")
+
+            messages.success(request, 'Conta criada! Verifique seu email para confirmar o cadastro.')
+            return redirect('registration_pending')
+        else:
+            print("DEBUG: Form is INVALID")
+            print(form.errors)
     else:
         form = AccountRegisterForm()
 
     return render(request, 'register_client.html', {'form': form})
+
+def registration_pending(request):
+    return render(request, 'registration_pending.html')
+
+def activate(request, uidb64, token):
+    print(f"DEBUG: Activate view called with uidb64={uidb64}, token={token}")
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        print(f"DEBUG: Decoded UID: {uid}")
+        user = User.objects.get(pk=uid)
+        print(f"DEBUG: User found: {user.username} (ID: {user.pk})")
+        print(f"DEBUG: Activate STATE - PK: {user.pk}, Password: {user.password}, LastLogin: {user.last_login}, Active: {user.is_active}, Joined: {user.date_joined}")
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+        print(f"DEBUG: Error finding user: {e}")
+        user = None
+
+    if user is not None:
+        token_valid = account_activation_token.check_token(user, token)
+        print(f"DEBUG: Token valid? {token_valid}")
+        
+        if token_valid:
+            user.is_active = True
+            user.email_confirmed = True
+            user.save()
+            print("DEBUG: User activated successfully")
+            messages.success(request, 'Email confirmado com sucesso! Agora você pode fazer login.')
+            return redirect('login_client')
+    
+    print("DEBUG: Activation FAILED")
+    messages.error(request, 'Link de ativação inválido ou expirado!')
+    return redirect('login_client')
 
 @login_required
 def profile(request):
@@ -63,9 +142,14 @@ def profile(request):
         return redirect('perfil')
 
     chamados_abertos = Tickets.objects.filter(opened_by=client, status__in=['SEM','ABE'])
+    tickets_resolved = Tickets.objects.filter(opened_by=client, status='FEC').count()
+    tickets_active = chamados_abertos.count()
+    
     context = {
         'client': client,
         'chamados_abertos': chamados_abertos,
+        'tickets_resolved': tickets_resolved,
+        'tickets_active': tickets_active,
     }
     return render(request, 'profile.html', context)
 

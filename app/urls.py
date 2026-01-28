@@ -10,7 +10,7 @@ from django.conf.urls.static import static
 from users.views import login_view, logout_view
 from django.shortcuts import redirect
 from tickets.views import ticket_reports
-from users.views import register, dashboard_technical, ticket_action
+from users.views import register, dashboard_technical, ticket_action, activate, registration_pending
 from tickets.notification_views import notifications_view
 from tickets.notification_views import mark_notification_read
 from tickets.notification_views import mark_all_notifications_read
@@ -36,6 +36,8 @@ urlpatterns = [
     path('login/', login_view, name='login_client'),
     path('logout/', logout_view, name='logout_client'),
     path("Cadastro/", register, name="register_client"),
+    path('users/pending/', registration_pending, name='registration_pending'),
+    path('users/activate/<str:uidb64>/<str:token>/', activate, name='activate'),
 
     # Técnicos (Dashboard e Ações)
     path("tecnico/dashboard/", dashboard_technical, name="dashboard_technical"),

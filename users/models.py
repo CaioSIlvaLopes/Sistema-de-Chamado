@@ -37,6 +37,8 @@ class Account(AbstractUser):
     # O campo 'name' no seu código original é redundante, pois o AbstractUser
     # já tem 'first_name' e 'last_name'. Mas se quiser um nome de exibição único:
     display_name = models.CharField(max_length=200, verbose_name="Nome Completo", blank=True)
+    
+    email_confirmed = models.BooleanField(default=False, verbose_name="Email Confirmado")
 
     def __str__(self):
         return self.username

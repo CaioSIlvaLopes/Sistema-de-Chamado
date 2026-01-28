@@ -144,14 +144,14 @@ body {
 /* --- STATS CARDS --- */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
 }
 
 /* --- STATS CARDS --- */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
 }
 
@@ -159,7 +159,7 @@ body {
     display: none !important;
     cursor: pointer;
     margin-right: 15px;
-    z-index: 1100;
+    z-index: 900;
     position: relative;
 }
 
@@ -1027,7 +1027,6 @@ textarea.form-control {
         align-items: center;
         gap: 15px;
         flex-direction: row-reverse;
-        justify-content: center;
     }
 
     header h2 {
@@ -1142,6 +1141,7 @@ textarea.form-control {
         gap: 15px;
         align-items: center;
         flex-direction: column;
+
     }
 }
 

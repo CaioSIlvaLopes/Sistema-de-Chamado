@@ -5,14 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Perfil | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Meu Perfil | HelpDesk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <!-- Replaced dashboard.css with specific profile css to avoid conflicts, or keep if needed for sidebar -->
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
-    <link rel="stylesheet" href="{% static 'css/pages/profile.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/pages/profile.css' %}?v=8">
     <script src="{% static 'js/mobile.js' %}" defer></script>
 </head>
 
@@ -21,74 +23,63 @@
     {% include 'partials/sidebar.html' %}
 
     <main class="main-content">
+        <!-- Header for Mobile Toggle (Hidden on desktop by CSS usually, but we need it for the hamburger) -->
         <header>
             <i class="fa-solid fa-bars mobile-menu-toggle"></i>
-            <h2>Meu Perfil</h2>
         </header>
-        <div class="profile-header">
 
-            <div class="profile-info-bar">
-                <div class="user-identity">
-                    <div class="avatar-large">
+        <div class="profile-banner"></div>
+
+        <div class="profile-content">
+
+            <!-- Identity Card -->
+            <div class="identity-card">
+                <div class="profile-img-wrapper">
+                    <!-- Placeholder or User Image -->
+                    <div class="avatar-placeholder">
                         <i class="fa-solid fa-user"></i>
-                        <div class="status-dot"></div>
                     </div>
-                    <div class="user-texts">
-                        <h2>{{ client.display_name|default:client.username }}</h2>
-                        <span>{{ client.username }}</span>
-                        <div style="font-size: 12px; color: #888; margin-top: 5px;">
-                            <i class="fa-solid fa-location-dot"></i> {{ client.enterprise.name }}
-                        </div>
-                    </div>
+                    <!-- <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User"> -->
+                    <div class="online-badge"></div>
                 </div>
-                <div class="profile-actions">
-                    <button class="btn-action btn-msg"><i class="fa-regular fa-envelope"></i> Mensagem</button>
-                    <button class="btn-action btn-edit">Editar Perfil</button>
-                    <a href="{% url 'logout_client' %}" class="btn-action btn-logout"><i
-                            class="fa-solid fa-right-from-bracket"></i> Sair</a>
-                </div>
-            </div>
-        </div>
+                <h2>{{ client.display_name|default:client.username }}</h2>
+                <p>{{ client.enterprise|default:"Sem Empresa" }}</p>
 
-        <div class="profile-grid">
-            <!-- Lado Esquerdo -->
-            <div class="card-box">
-                <h3 class="section-title">Sobre</h3>
-                <ul class="info-list">
-                    <li><i class="fa-solid fa-person"></i> {{ client.display_name|default:client.username }}</li>
-                    <li><i class="fa-solid fa-envelope"></i> {{ client.email }}</li>
-                    <li><i class="fa-solid fa-building"></i> {{ client.enterprise.name }}</li>
-                </ul>
-
-                <h3 class="section-title" style="margin-top: 30px;">Chamados em aberto</h3>
-                <div class="skills-container">
-                    {% for ticket in chamados_abertos %}
-                    <span class="skill-tag">#{{ ticket.id }} - {{ ticket.description|truncatechars:30 }}</span>
-                    {% empty %}
-                    <span class="skill-tag">Nenhum chamado em aberto</span>
-                    {% endfor %}
-                </div>
             </div>
 
-            <!-- Lado Direito -->
-            <div class="card-box">
-                <h3 class="section-title">Editar Informações</h3>
+            <!-- Settings Card -->
+            <div class="settings-card">
+                <div class="tabs-nav">
+                    <a href="#" class="tab-link active">Informações Básicas</a>
+                </div>
 
                 <form method="POST">
                     {% csrf_token %}
-                    <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="input-group">
+                    <div class="form-grid">
+                        <div class="form-group">
                             <label>Nome Completo</label>
-                            <input type="text" name="name" class="input-field"
-                                value="{{ client.display_name|default:'' }}">
+                            <input type="text" name="name" value="{{ client.display_name|default:'' }}"
+                                placeholder="Seu nome completo">
                         </div>
-                        <div class="input-group">
-                            <label>E-mail</label>
-                            <input type="email" name="email" class="input-field" value="{{ client.email }}">
+                        <div class="form-group">
+                            <label>E-mail Corporativo</label>
+                            <input type="email" name="email" value="{{ client.email }}"
+                                placeholder="seuemail@empresa.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo / Função</label>
+                            <input type="text" value="Usuário" disabled style="background: #eee; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Departamento</label>
+                            <input type="text" value="{{ client.enterprise.name|default:'Sem Empresa' }}" disabled
+                                style="background: #eee; cursor: not-allowed;">
                         </div>
                     </div>
 
-                    <div style="margin-top: 30px; overflow: hidden;">
+                    <div class="btn-group">
+                        <a href="{% url 'novo_ticket' %}" class="btn-cancel"
+                            style="text-decoration: none; text-align: center;">Cancelar</a>
                         <button type="submit" class="btn-save">Salvar Alterações</button>
                     </div>
                 </form>

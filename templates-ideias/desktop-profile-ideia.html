@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Usuário | HelpDesk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-pink: #FF4060;
+            --primary-blue: #4080FF;
+            --bg-body: #F4F7FA;
+            --text-dark: #2D3142;
+            --text-gray: #9CABC2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            display: flex;
+            height: 100vh;
+        }
+
+        /* --- SIDEBAR (Reutilizada do Dashboard para Consistência) --- */
+        nav.sidebar {
+            width: 260px;
+            background: white;
+            padding: 30px;
+            border-right: 1px solid #E4E8EE;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 22px;
+            color: var(--primary-pink);
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-gray);
+            border-radius: 12px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .menu-item.active {
+            background: #FFF0F2;
+            color: var(--primary-pink);
+        }
+
+        /* --- ÁREA PRINCIPAL --- */
+        main.profile-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Estilizado */
+        .profile-banner {
+            background: var(--primary-pink);
+            height: 220px;
+            width: 100%;
+            position: relative;
+            border-bottom-left-radius: 60px;
+        }
+
+        .profile-content {
+            padding: 0 50px 50px 50px;
+            margin-top: -80px;
+            /* Sobe o conteúdo para cima do banner */
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        /* Coluna da Esquerda: Card de Identidade */
+        .identity-card {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+        }
+
+        .profile-img-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .profile-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            border-radius: 40px;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .online-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background: #27AE60;
+            border: 3px solid white;
+            border-radius: 50%;
+        }
+
+        .identity-card h2 {
+            font-size: 20px;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .identity-card p {
+            color: var(--text-gray);
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .stat-badge-group {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #F0F2F5;
+        }
+
+        .stat-badge {
+            text-align: center;
+        }
+
+        .stat-badge span {
+            font-size: 10px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .stat-badge strong {
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        /* Coluna da Direita: Abas e Forms */
+        .settings-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 30px;
+            border-bottom: 1px solid #F0F2F5;
+            margin-bottom: 35px;
+        }
+
+        .tab-link {
+            padding-bottom: 15px;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .tab-link.active {
+            color: var(--primary-pink);
+        }
+
+        .tab-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-pink);
+            border-radius: 10px;
+        }
+
+        /* Formulário */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid #E4E8EE;
+            background: #F8F9FB;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-pink);
+            background: white;
+        }
+
+        .btn-save {
+            background: var(--primary-pink);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="sidebar">
+        <div class="logo"><i class="fas fa-bolt"></i> HelpDesk</div>
+        <a href="#" class="menu-item"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" class="menu-item"><i class="fas fa-ticket-alt"></i> Chamados</a>
+        <a href="#" class="menu-item active"><i class="fas fa-user"></i> Perfil</a>
+        <a href="#" class="menu-item"><i class="fas fa-cog"></i> Ajustes</a>
+    </nav>
+
+    <main class="profile-container">
+        <div class="profile-banner"></div>
+
+        <div class="profile-content">
+
+            <div class="identity-card">
+                <div class="profile-img-wrapper">
+                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User">
+                    <div class="online-badge"></div>
+                </div>
+                <h2>Andrew Frolov</h2>
+                <p>Suporte Nível 2 • TI</p>
+
+                <div class="stat-badge-group">
+                    <div class="stat-badge">
+                        <span>Resolvidos</span>
+                        <strong>128</strong>
+                    </div>
+                    <div class="stat-badge">
+                        <span>SLA Médio</span>
+                        <strong>94%</strong>
+                    </div>
+                    <div class="stat-badge">
+                        <span>Rank</span>
+                        <strong>#4</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <div class="tabs-nav">
+                    <a href="#" class="tab-link active">Informações Básicas</a>
+                    <a href="#" class="tab-link">Segurança</a>
+                    <a href="#" class="tab-link">Notificações</a>
+                </div>
+
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" value="Andrew Frolov">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail Corporativo</label>
+                            <input type="email" value="andrew.f@empresa.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo / Função</label>
+                            <input type="text" value="Analista de Suporte Pleno">
+                        </div>
+                        <div class="form-group">
+                            <label>Departamento</label>
+                            <input type="text" value="Tecnologia da Informação">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 10px;">
+                        <label>Biografia Curta</label>
+                        <input type="text" placeholder="Conte um pouco sobre suas especialidades...">
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 15px;">
+                        <button type="button" class="btn-save"
+                            style="background: #F0F2F5; color: var(--text-gray);">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>

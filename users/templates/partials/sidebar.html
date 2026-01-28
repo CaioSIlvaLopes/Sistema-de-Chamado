@@ -55,5 +55,7 @@
                 class="{% if request.resolver_match.url_name == 'perfil' %}active{% endif %}"><i
                     class="fa-solid fa-user-gear"></i> <span>Perfil</span></a></li>
         {% endif %}
+        <li><a href="{% url 'logout_client' %}"><i class="fa-solid fa-right-from-bracket"></i> <span>Sair</span></a>
+        </li>
     </ul>
 </aside>
