@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard User Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
+
+
+</head>
+
+<body>
+
+
+    {% include 'partials/sidebar.html' %}
+
+    <main class="main-content">
+        <header style="justify-content: unset;">
+            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+        </header>
+
+        <div class="stats-grid">
+            <div class="card dark">
+                <div class="card-header">
+                    <span>Total Chamados</span>
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="card-value">{{ total_tickets }}</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Concluídos</span>
+                    <i class="fa-solid fa-check-circle icon-orange"></i>
+                </div>
+                <div class="card-value">{{ closed_tickets }}</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Em Aberto</span>
+                    <i class="fa-solid fa-folder-open icon-orange"></i>
+                </div>
+                <div class="card-value">{{ open_tickets }}</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Pendentes</span>
+                    <i class="fa-solid fa-clock icon-orange"></i>
+                </div>
+                <div class="card-value">{{ pending_tickets }}</div>
+            </div>
+        </div>
+
+        <div class="middle-grid">
+            <div class="card">
+                <div class="chart-header">
+                    <span style="font-size: 14px; color:#666;">Chamados por Mês ({{ total_tickets }} este ano)</span>
+                </div>
+
+                <div class="bar-chart-container">
+                    {% for month in chart_data %}
+                    <div class="bar-group">
+                        <!-- Alternating colors for visual interest -->
+                        <div class="bar {% if forloop.counter|divisibleby:2 %}blue{% else %}orange{% endif %}"
+                            style="--bar-height: {{ month.height }}%; height: var(--bar-height);"
+                            title="{{ month.count }} chamados"></div>
+                        <div class="month-label">{{ month.name }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="donut-wrapper">
+                    <div class="donut-chart" style="--end-open: {{ end_open|default:0|stringformat:'.0f' }}%; --end-closed: {{ end_closed|default:0|stringformat:'.0f' }}%; background: conic-gradient(
+                        var(--accent-orange) 0% var(--end-open), 
+                        var(--sidebar-bg) var(--end-open) var(--end-closed),
+                        #e0e0e0 var(--end-closed) 100% );">
+                        <!-- Simple visual representation - static for now or could be calculated -->
+                        <div class="donut-center">{{ total_tickets }}</div>
+                    </div>
+                    <div class="donut-legend">
+                        <div><span style="color:var(--accent-orange)">●</span> Abertos: {{ open_tickets }}</div>
+                        <div><span style="color:var(--sidebar-bg)">●</span> Fechados: {{ closed_tickets }}</div>
+                        <div><span style="color:#e0e0e0">●</span> Pendentes: {{ pending_tickets }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-grid">
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div style="padding: 20px;">
+                    <div class="legend-item"><span class="dot orange"></span> Chamados Totais</div>
+                    <div class="legend-item"><span class="dot blue"></span> Concluídos</div>
+                </div>
+                <svg viewBox="0 0 500 150" preserveAspectRatio="none"
+                    style="width: 100%; height: 120px; display:block;">
+                    <path d="M0,100 C150,150 250,50 350,100 C400,120 450,80 500,100 L500,150 L0,150 Z" fill="#10243e"
+                        opacity="0.8"></path>
+                    <path d="M0,120 C100,80 200,140 300,80 C400,20 450,100 500,80 L500,150 L0,150 Z" fill="#fca311"
+                        opacity="0.8"></path>
+                </svg>
+            </div>
+
+            <div class="card">
+                <div class="calendar-grid">
+                    <div class="cal-head">S</div>
+                    <div class="cal-head">M</div>
+                    <div class="cal-head">T</div>
+                    <div class="cal-head">W</div>
+                    <div class="cal-head">T</div>
+                    <div class="cal-head">F</div>
+                    <div class="cal-head">S</div>
+
+                    <div class="cal-day"></div>
+                    <div class="cal-day"></div>
+                    <div class="cal-day active-blue">1</div>
+                    <div class="cal-day">2</div>
+                    <div class="cal-day">3</div>
+                    <div class="cal-day">4</div>
+                    <div class="cal-day">5</div>
+                    <div class="cal-day">6</div>
+                    <div class="cal-day">7</div>
+                    <div class="cal-day">8</div>
+                    <div class="cal-day">9</div>
+                    <div class="cal-day">10</div>
+                    <div class="cal-day">11</div>
+                    <div class="cal-day">12</div>
+                    <div class="cal-day">13</div>
+                    <div class="cal-day">14</div>
+                    <div class="cal-day active-orange">15</div>
+                    <div class="cal-day">16</div>
+                    <div class="cal-day active-blue">17</div>
+                    <div class="cal-day">18</div>
+                    <div class="cal-day">19</div>
+                </div>
+                <button class="check-btn" style="width: 100%; margin-top: 20px; text-align: center;">Check Now</button>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+{% load static %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/pages/notifications.css' %}?v=3">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
+</head>
+
+<body>
+
+    {% include 'partials/sidebar.html' %}
+
+    <main class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+            </div>
+            <div class="page-header-actions">
+                <a href="{% url 'mark_all_read' %}" class="btn-action-light"
+                    style="font-size: 13px; color: var(--text-secondary); text-decoration: none;">
+                    <i class="fa-solid fa-check-double"></i> Marcar todas como lidas
+                </a>
+            </div>
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="filter-container">
+            <a href="?filter=all" class="filter-btn {% if current_filter == 'all' %}active{% endif %}">Todas</a>
+            <a href="?filter=unread" class="filter-btn {% if current_filter == 'unread' %}active{% endif %}">Não
+                Lidas</a>
+            <a href="?filter=read" class="filter-btn {% if current_filter == 'read' %}active{% endif %}">Lidas</a>
+        </div>
+
+        <div class="notification-list">
+            {% for n in notifications %}
+            <a href="{% url 'mark_notification_read' n.id %}"
+                class="notification-card {% if not n.is_read %}unread{% else %}read{% endif %}">
+                <div class="notif-content">
+                    <div class="notif-icon">
+                        {% if n.ticket %}
+                        <i class="fa-solid fa-ticket"></i>
+                        {% else %}
+                        <i class="fa-solid fa-message"></i>
+                        {% endif %}
+                    </div>
+                    <div class="notif-texts">
+                        <div class="notif-title">{{ n.title }}</div>
+                        <div class="notif-msg">{{ n.message }}</div>
+                    </div>
+                </div>
+                <div class="notif-meta">
+                    <span class="notif-date">{{ n.created_at|date:"d M, H:i" }}</span>
+                    {% if not n.is_read %}
+                    <span class="status-dot"></span>
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon-wrapper">
+                    <i class="fa-regular fa-bell"></i>
+                </div>
+                <h3>Tudo limpo por aqui!</h3>
+                <p>Você não tem novas notificações no momento.</p>
+                <a href="{% url 'meus_chamados' %}" class="btn-primary-outline"
+                    style="margin-top: 20px; display: inline-block;">
+                    Voltar para o Início
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </main>
+</body>
+
+</html>
+{% endblock %}

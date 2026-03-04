@@ -1,0 +1,90 @@
+
+ .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            color: var(--sidebar-bg);
+            font-size: 40px;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .profile-email {
+            font-size: 12px;
+            color: #8da1b9;
+        }
+
+        .nav-menu {
+            list-style: none;
+            width: 100%;
+        }
+
+        .nav-menu li {
+            margin-bottom: 15px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #8da1b9;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-menu a i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+<aside class="sidebar">
+    <div class="profile-section">
+        <div class="profile-img"><i class="fa-solid fa-user"></i></div>
+        <div class="profile-name">{{ request.user }}</div>
+    </div>
+</aside>

@@ -1,0 +1,90 @@
+RESUMO DAS ALTERAÇÕES NO SISTEMA DE CHAMADOS
+============================================
+Objetivo: Enviar notificação por e-mail automaticamente quando um novo chamado for criado e atribuído a um técnico.
+
+1. CRIAÇÃO DA CAMADA DE SERVIÇO (Novo Arquivo)
+-----------------------------------------------
+Arquivo criado: tickets/services.py
+
+Conteúdo adicionado:
+from django.core.mail import send_mail
+from django.conf import settings
+
+def notificar_tecnico_email(chamado):
+    """
+    Envia um email de notificação para o técnico responsável pelo chamado,
+    ou para todos os técnicos caso não haja nenhum atribuído.
+    """
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    assunto = f"Novo chamado #{chamado.id}"
+    remetente = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@seusistema.com')
+    destinatarios = []
+    
+    if chamado.attributed_to and hasattr(chamado.attributed_to, 'email') and chamado.attributed_to.email:
+        tecnico = chamado.attributed_to
+        nome_tecnico = tecnico.first_name if tecnico.first_name else tecnico.username
+        
+        corpo = (
+            f"Olá {nome_tecnico},\n\n"
+            f"Um novo chamado foi aberto e atribuído a você.\n\n"
+            f"Número do chamado: {chamado.id}\n"
+            f"Descrição: {chamado.description}\n"
+            f"Prioridade: {chamado.get_priority_display()}\n\n"
+            f"Acesse o sistema para mais detalhes.\n"
+        )
+        destinatarios.append(tecnico.email)
+        
+    else:
+        tecnicos = User.objects.filter(is_technician=True).exclude(email__isnull=True).exclude(email="")
+        destinatarios = [t.email for t in tecnicos]
+        
+        corpo = (
+            f"Olá,\n\n"
+            f"Um novo chamado foi aberto e está aguardando atribuição de um técnico.\n\n"
+            f"Número do chamado: {chamado.id}\n"
+            f"Descrição: {chamado.description}\n"
+            f"Prioridade: {chamado.get_priority_display()}\n\n"
+            f"Acesse o sistema para assumir o chamado.\n"
+        )
+        
+    if destinatarios:
+        send_mail(
+            subject=assunto,
+            message=corpo,
+            from_email=remetente,
+            recipient_list=destinatarios,
+            fail_silently=False,
+        )
+
+
+2. INTEGRAÇÃO COM SIGNALS (Arquivo Modificado)
+-----------------------------------------------
+Arquivo modificado: tickets/signals.py
+
+Conteúdo adicionado (ao final do arquivo):
+from .services import notificar_tecnico_email
+
+@receiver(post_save, sender=Tickets)
+def notificar_tecnico_ao_criar_chamado(sender, instance, created, **kwargs):
+    """
+    Envia notificação por email para o técnico quando um chamado é criado.
+    """
+    if created:
+        notificar_tecnico_email(instance)
+
+
+3. REGISTRO NO APPS.PY (Verificação)
+-----------------------------------------------
+Arquivo verificado: tickets/apps.py
+
+O arquivo já possuía a configuração correta para carregar os signals automaticamente no método ready(). Nenhuma alteração foi necessária:
+
+class TicketsConfig(AppConfig):
+    ...
+    def ready(self):
+        import tickets.signals
+
+============================================
+Nenhuma lógica existente de criação de chamados (nas views) precisou ser alterada, garantindo o desacoplamento e seguindo as boas práticas do Django!

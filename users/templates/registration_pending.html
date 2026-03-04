@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifique seu Email - Sistema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}?v=2">
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card" style="text-align: center;">
+            <div class="auth-icon">
+                <i class="fa-solid fa-envelope-circle-check" style="font-size: 50px; color: var(--primary-color);"></i>
+            </div>
+            <h2 style="margin-top: 20px;">Verifique seu Email</h2>
+            <p style="color: #666; margin-bottom: 25px;">
+                Enviamos um código de verificação para o endereço <strong>{{ email }}</strong>.
+                <br>
+                Por favor, insira o código abaixo para ativar sua conta.
+            </p>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="error-message"
+                style="background-color: #fee2e2; color: #dc2626; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'verify_email' %}">
+                {% csrf_token %}
+                <div style="margin-bottom: 20px;">
+                    <input type="text" name="codigo" placeholder="Digite os 6 dígitos" maxlength="6"
+                        style="width: 100%; padding: 12px; text-align: center; font-size: 24px; letter-spacing: 5px; border-radius: 8px; border: 1px solid #ddd;"
+                        required>
+                </div>
+
+                <div class="auth-actions">
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-bottom: 10px;">
+                        Validar Código
+                    </button>
+                    <a href="{% url 'login_client' %}" class="btn-primary-outline"
+                        style="width: 100%; display: inline-block;">
+                        Cancelar e ir para Login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

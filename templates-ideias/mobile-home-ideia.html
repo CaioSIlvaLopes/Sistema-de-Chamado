@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Suporte - Protótipo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- RESET E BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- MOLDURA DO CELULAR --- */
+        .mobile-frame {
+            background-color: #FAFAFA;
+            /* Fundo levemente off-white */
+            width: 375px;
+            height: 812px;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border: 8px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            /* Corta o conteúdo nas bordas arredondadas */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Barra de Status Fictícia */
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 25px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .content {
+            padding: 10px 25px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        /* Barra de Busca */
+        .search-bar {
+            background-color: #F0F0F0;
+            border-radius: 15px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .search-bar i {
+            margin-right: 10px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* --- GRID DE DESTAQUE (Rosa e Azul) --- */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            /* O Rosa é maior */
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card-action {
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+            height: 140px;
+        }
+
+        .card-action:active {
+            transform: scale(0.98);
+        }
+
+        .card-pink {
+            background-color: #FF4060;
+        }
+
+        .card-blue {
+            background-color: #4080FF;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .card-icon {
+            align-self: flex-end;
+            /* Ícone no canto */
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        /* --- LISTA DE CHAMADOS (Estilo "Goals") --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .add-btn {
+            background: #FF4060;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .ticket-card {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .ticket-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        /* Cores dos ícones baseadas no status */
+        .icon-blue {
+            border: 2px solid #4080FF;
+            color: #4080FF;
+        }
+
+        .icon-pink {
+            border: 2px solid #FF4060;
+            color: #FF4060;
+        }
+
+        .icon-gray {
+            border: 2px solid #ddd;
+            color: #aaa;
+        }
+
+        .ticket-info {
+            flex: 1;
+        }
+
+        .ticket-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .ticket-status {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Barra de Progresso dentro do card */
+        .progress-bg {
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        .fill-blue {
+            background: #4080FF;
+            width: 70%;
+        }
+
+        .fill-pink {
+            background: #FF4060;
+            width: 10%;
+        }
+
+        /* --- MENU INFERIOR --- */
+        .bottom-nav {
+            background: white;
+            height: 80px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+            /* Espaço para a "barra home" do iPhone */
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #ccc;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: #FF4060;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mobile-frame">
+        <div class="status-bar">
+            <span>9:41</span>
+            <i class="fas fa-battery-full"></i>
+        </div>
+
+        <div class="content">
+            <h1>Suporte</h1>
+
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar chamado ou FAQ...">
+            </div>
+
+            <div class="hero-grid">
+                <div class="card-action card-pink">
+                    <span class="card-title">Novo<br>Chamado</span>
+                    <i class="fas fa-plus-circle card-icon"></i>
+                </div>
+
+                <div class="card-action card-blue">
+                    <span class="card-title">Base de<br>Dados</span>
+                    <i class="fas fa-book card-icon"></i>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <span class="section-title">Meus Chamados</span>
+                <div class="add-btn"><i class="fas fa-plus"></i></div>
+            </div>
+
+            <div class="ticket-card">
+                <div class="ticket-icon icon-blue">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <div class="ticket-info">
+                    <div class="ticket-title">Erro no Outlook</div>
+                    <div class="ticket-status">Técnico analisando</div>
+                    <div class="progress-bg">
+                        <div class="progress-fill fill-blue"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticket-card">
+                <div class="ticket-icon icon-pink">
+                    <i class="fas fa-print"></i>
+                </div>
+                <div class="ticket-info">
+                    <div class="ticket-title">Impressora Parada</div>
+                    <div class="ticket-status">Aguardando atendimento</div>
+                    <div class="progress-bg">
+                        <div class="progress-fill fill-pink"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticket-card">
+                <div class="ticket-icon icon-gray">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="ticket-info">
+                    <div class="ticket-title">Instalação de VPN</div>
+                    <div class="ticket-status">Concluído</div>
+                </div>
+                <div style="color: #4CAF50; font-size: 18px;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Início</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Chamados</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-bell"></i>
+                <span>Avisos</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Perfil</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+Ficou pra pesquisar como fazer a conversa em tempo real  Django Channels
+
+fazer a base.html pra todo o dashbord ao menos
+
+fazer validadores de cadastro
+
+otimizar a tela de novos chamados
+

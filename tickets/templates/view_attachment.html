@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Anexo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b141a;
+            /* Dark background like media viewers */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .back-btn {
+            color: #fff;
+            font-size: 24px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #ccc;
+        }
+
+        .filename {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .media-content {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 4px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <a href="{{ back_url }}" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span class="filename">{{ filename }}</span>
+        </a>
+    </div>
+
+    <div class="content-area">
+        {% if attachment_url %}
+        <img src="{{ attachment_url }}" class="media-content" alt="Anexo">
+        {% else %}
+        <div style="color:white;">Arquivo não encontrado.</div>
+        {% endif %}
+    </div>
+
+</body>
+
+</html>

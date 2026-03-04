@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Conta - Sistema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}?v=2">
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h2 class="auth-title">Criar Conta</h2>
+                <p class="auth-subtitle">Preencha os dados para se cadastrar</p>
+            </div>
+
+            <form method="post" action="{% url 'register_client' %}">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="error-message">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Verifique os erros abaixo:</span>
+                    <ul style="margin: 5px 0 0 20px; list-style-type: disc;">
+                        {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                        {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                        {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <!-- Nome -->
+                <div class="input-group">
+                    <label for="display_name" class="input-label">Nome Completo</label>
+                    <div class="input-wrapper">
+                        <input id="display_name" type="text" name="display_name" class="form-control"
+                            placeholder="Seu nome completo" value="{{ form.display_name.value|default:'' }}" required
+                            autocomplete="name">
+                        <i class="fa-solid fa-user input-icon"></i>
+                    </div>
+                    {% if form.display_name.errors %}
+                    <span class="error-text">{{ form.display_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Username -->
+                <div class="input-group">
+                    <label for="username" class="input-label">Nome de Usuário</label>
+                    <div class="input-wrapper">
+                        <input id="username" type="text" name="username" class="form-control"
+                            placeholder="Seu usuário de acesso" value="{{ form.username.value|default:'' }}" required
+                            autocomplete="username">
+                        <i class="fa-solid fa-id-badge input-icon"></i>
+                    </div>
+                    {% if form.username.errors %}
+                    <span class="error-text">{{ form.username.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Empresa -->
+                <div class="input-group">
+                    <label for="enterprise" class="input-label">Empresa</label>
+                    <div class="input-wrapper">
+                        <select id="enterprise" name="enterprise" class="form-control" required>
+                            <option value="" disabled {% if not form.enterprise.value %}selected{% endif %}>Selecione
+                                sua empresa...</option>
+                            {% for enterprise in form.fields.enterprise.queryset %}
+                            <option value="{{ enterprise.id }}" {% if
+                                form.enterprise.value|stringformat:"s"==enterprise.id|stringformat:"s" %}selected{%
+                                endif %}>{{ enterprise.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="fa-solid fa-building input-icon"></i>
+                    </div>
+                    {% if form.enterprise.errors %}
+                    <span class="error-text">{{ form.enterprise.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- E-mail -->
+                <div class="input-group">
+                    <label for="email" class="input-label">E-mail</label>
+                    <div class="input-wrapper">
+                        <input id="email" type="email" name="email" class="form-control" placeholder="seu@email.com"
+                            value="{{ form.email.value|default:'' }}" required autocomplete="email">
+                        <i class="fa-solid fa-envelope input-icon"></i>
+                    </div>
+                    {% if form.email.errors %}
+                    <span class="error-text">{{ form.email.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Senha -->
+                <!-- Senha -->
+                <!-- Senha -->
+                <div class="input-group">
+                    <label for="password" class="input-label">Senha</label>
+                    <div class="input-wrapper">
+                        <input id="password" type="password" name="password1" class="form-control password-input"
+                            placeholder="Crie uma senha" required autocomplete="new-password">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <i class="fa-solid fa-eye toggle-password" data-target="password"></i>
+                    </div>
+                    {% if form.password1.errors %}
+                    <span class="error-text">{{ form.password1.errors.0 }}</span>
+                    {% elif form.errors.password1 %}
+                    <span class="error-text">{{ form.errors.password1.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Confirmar Senha -->
+                <div class="input-group">
+                    <label for="password_confirm" class="input-label">Confirme sua senha</label>
+                    <div class="input-wrapper">
+                        <input id="password_confirm" type="password" name="password2"
+                            class="form-control password-input" placeholder="Repita a senha" required
+                            autocomplete="new-password">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <i class="fa-solid fa-eye toggle-password" data-target="password_confirm"></i>
+                    </div>
+                    {% if form.password2.errors %}
+                    <span class="error-text">{{ form.password2.errors.0 }}</span>
+                    {% elif form.errors.password2 %}
+                    <span class="error-text">{{ form.errors.password2.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Tipo de Conta (Is Technician) -->
+                <div class="input-group">
+                    <label for="{{ form.is_technician.id_for_label }}" class="input-label">Tipo de Conta</label>
+                    <div class="input-wrapper">
+                        {{ form.is_technician }}
+                        <i class="fa-solid fa-users-gear input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <button type="submit" class="btn-primary">
+                        Cadastrar <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="auth-footer">
+                Já tem uma conta?
+                <a href="{% url 'login_client' %}" class="auth-link">Fazer Login</a>
+            </div>
+        </div>
+
+        <script>
+            document.querySelectorAll('.toggle-password').forEach(icon => {
+                icon.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-target');
+                    const input = document.getElementById(targetId);
+
+                    if (input) {
+                        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                        input.setAttribute('type', type);
+
+                        this.classList.toggle('fa-eye');
+                        this.classList.toggle('fa-eye-slash');
+                    }
+                });
+            });
+        </script>
+    </div>
+
+</body>
+
+</html>

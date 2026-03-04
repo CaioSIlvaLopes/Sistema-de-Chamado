@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil | HelpDesk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <!-- Replaced dashboard.css with specific profile css to avoid conflicts, or keep if needed for sidebar -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
+    <link rel="stylesheet" href="{% static 'css/pages/profile.css' %}?v=8">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
+</head>
+
+<body>
+
+    {% include 'partials/sidebar.html' %}
+
+    <main class="main-content">
+        <!-- Header for Mobile Toggle (Hidden on desktop by CSS usually, but we need it for the hamburger) -->
+        <header>
+            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+        </header>
+
+        <div class="profile-banner"></div>
+
+        <div class="profile-content">
+
+            <!-- Identity Card -->
+            <div class="identity-card">
+                <div class="profile-img-wrapper">
+                    <!-- Placeholder or User Image -->
+                    <div class="avatar-placeholder">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <!-- <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User"> -->
+                    <div class="online-badge"></div>
+                </div>
+                <h2>{{ client.display_name|default:client.username }}</h2>
+                <p>{{ client.enterprise|default:"Sem Empresa" }}</p>
+
+            </div>
+
+            <!-- Settings Card -->
+            <div class="settings-card">
+                <div class="tabs-nav">
+                    <a href="#" class="tab-link active">Informações Básicas</a>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" name="name" value="{{ client.display_name|default:'' }}"
+                                placeholder="Seu nome completo">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail Corporativo</label>
+                            <input type="email" name="email" value="{{ client.email }}"
+                                placeholder="seuemail@empresa.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Cargo / Função</label>
+                            <input type="text" value="Usuário" disabled style="background: #eee; cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label>Departamento</label>
+                            <input type="text" value="{{ client.enterprise.name|default:'Sem Empresa' }}" disabled
+                                style="background: #eee; cursor: not-allowed;">
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <a href="{% url 'novo_ticket' %}" class="btn-cancel"
+                            style="text-decoration: none; text-align: center;">Cancelar</a>
+                        <button type="submit" class="btn-save">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+
+</html>

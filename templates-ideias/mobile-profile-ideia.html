@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Suporte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-pink: #FF4060;
+            --primary-blue: #4080FF;
+            --bg-light: #F8F9FD;
+            --text-main: #2D3142;
+            --text-gray: #9CABC2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #d1d1d1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .mobile-frame {
+            background-color: var(--bg-light);
+            width: 375px;
+            height: 812px;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            border: 8px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER (Rosa Curvo como na Imagem) --- */
+        .profile-header {
+            background: var(--primary-pink);
+            height: 280px;
+            padding: 50px 25px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .edit-icon {
+            position: absolute;
+            top: 50px;
+            right: 25px;
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .avatar-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-container i {
+            font-size: 45px;
+            color: var(--primary-pink);
+        }
+
+        .profile-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .profile-header p {
+            font-size: 13px;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        /* --- INFO OVERLAY (Cartão Central) --- */
+        .info-cards-container {
+            margin-top: -50px;
+            padding: 0 25px;
+            z-index: 2;
+        }
+
+        .quick-stats {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item span {
+            display: block;
+            font-size: 11px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-item strong {
+            font-size: 18px;
+            color: var(--text-main);
+        }
+
+        /* --- MENU DE OPÇÕES (Estilo Goals) --- */
+        .menu-section {
+            padding: 0 25px;
+        }
+
+        .menu-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            padding-left: 5px;
+        }
+
+        .menu-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            transition: 0.3s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:hover {
+            border-color: #eee;
+            transform: translateY(-2px);
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .icon-blue {
+            background: #E8F0FF;
+            color: var(--primary-blue);
+        }
+
+        .icon-pink {
+            background: #FFE8EC;
+            color: var(--primary-pink);
+        }
+
+        .icon-yellow {
+            background: #FFF9E8;
+            color: #FFB040;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .item-arrow {
+            color: var(--text-gray);
+            font-size: 12px;
+        }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav {
+            margin-top: auto;
+            background: white;
+            height: 80px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .nav-item {
+            color: #D1D8E5;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--primary-pink);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mobile-frame">
+
+        <div class="profile-header">
+            <i class="fas fa-pen edit-icon"></i>
+            <div class="avatar-container">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <h2>Andrew Frolov</h2>
+            <p>Técnico de Suporte Nível 2</p>
+        </div>
+
+        <div class="info-cards-container">
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <span>Resolvidos</span>
+                    <strong>128</strong>
+                </div>
+                <div style="width: 1px; background: #eee;"></div>
+                <div class="stat-item">
+                    <span>SLA Médio</span>
+                    <strong>94%</strong>
+                </div>
+                <div style="width: 1px; background: #eee;"></div>
+                <div class="stat-item">
+                    <span>Rank</span>
+                    <strong>#4</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <h3 class="menu-title">Configurações</h3>
+
+            <div class="menu-item">
+                <div class="item-icon icon-blue">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <span class="item-text">Dados Pessoais</span>
+                <i class="fas fa-chevron-right item-arrow"></i>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-icon icon-pink">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <span class="item-text">Notificações</span>
+                <i class="fas fa-chevron-right item-arrow"></i>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-icon icon-yellow">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <span class="item-text">Segurança</span>
+                <i class="fas fa-chevron-right item-arrow"></i>
+            </div>
+
+            <div class="menu-item" style="margin-top: 20px; background: #FFF5F6;">
+                <div class="item-icon" style="color: #FF4060;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <span class="item-text" style="color: #FF4060;">Sair da Conta</span>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item"><i class="fas fa-th-large"></i></div>
+            <div class="nav-item"><i class="fas fa-ticket-alt"></i></div>
+            <div class="nav-item"><i class="fas fa-chart-line"></i></div>
+            <div class="nav-item active"><i class="fas fa-user"></i></div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

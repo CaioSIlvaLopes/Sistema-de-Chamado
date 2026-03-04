@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Suporte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-pink: #FF4060;
+            --primary-blue: #4080FF;
+            --bg-gray: #F5F7FA;
+            --text-dark: #1E2A38;
+            --text-light: #8A94A6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- MOLDURA DO MOBILE --- */
+        .mobile-frame {
+            background-color: #FFFFFF;
+            width: 375px;
+            height: 812px;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+            border: 8px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- HEADER & TOP --- */
+        .header-bg {
+            /* Fundo sutil para separar o cabeçalho */
+            background: linear-gradient(180deg, #F9F9F9 0%, #FFFFFF 100%);
+            padding: 40px 25px 20px 25px;
+        }
+
+        .user-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .user-info h2 {
+            font-size: 22px;
+            color: var(--text-dark);
+        }
+
+        .user-info p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(64, 128, 255, 0.3);
+        }
+
+        /* --- CONTEÚDO SCROLLÁVEL --- */
+        .scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 25px 20px 25px;
+        }
+
+        /* Esconde barra de rolagem */
+        .scroll-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* --- CARDS DE RESUMO (STATS) --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 140px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Estilo Card Rosa (Urgente) */
+        .stat-pink {
+            background: var(--primary-pink);
+            color: white;
+        }
+
+        .stat-pink h3 {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .stat-pink span {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Estilo Card Azul (Info) */
+        .stat-blue {
+            background: white;
+            border: 1px solid #eee;
+        }
+
+        .stat-blue h3 {
+            font-size: 36px;
+            color: var(--primary-blue);
+        }
+
+        .stat-blue span {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Elementos decorativos de fundo nos cards */
+        .bg-circle {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            opacity: 0.1;
+            right: -20px;
+            bottom: -20px;
+        }
+
+        .bg-pink {
+            background: white;
+        }
+
+        .bg-blue {
+            background: var(--primary-blue);
+        }
+
+        /* --- GRÁFICO DE BARRAS (Statistics) --- */
+        .chart-section {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 25px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .tag-pill {
+            background: #F0F4FF;
+            color: var(--primary-blue);
+            font-size: 10px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Container das barras */
+        .bar-chart {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 120px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .bar {
+            width: 8px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+
+        /* Tooltip flutuante na barra mais alta */
+        .bar.active::after {
+            content: '42';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-dark);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .bar-label {
+            font-size: 10px;
+            color: var(--text-light);
+        }
+
+        .b-pink {
+            background: var(--primary-pink);
+            box-shadow: 0 4px 10px rgba(255, 64, 96, 0.3);
+        }
+
+        .b-blue {
+            background: #E0E7FF;
+        }
+
+        /* Azul bem claro para dias inativos */
+
+        /* --- WIDGET CIRCULAR (Meta SLA) --- */
+        .sla-widget {
+            display: flex;
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            align-items: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .donut-chart {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-blue) 0% 75%, #EFF2F7 75% 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .donut-hole {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .donut-icon {
+            color: var(--primary-blue);
+            font-size: 18px;
+        }
+
+        .sla-info h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .sla-info p {
+            font-size: 11px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        /* --- MENU INFERIOR --- */
+        .bottom-nav {
+            background: white;
+            height: 80px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+            border-top: 1px solid #f5f5f5;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #ccc;
+            font-size: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-blue);
+        }
+
+        /* Botão Flutuante Central (Opcional) */
+        .fab {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 20px;
+            margin-top: -30px;
+            /* Sobe o botão */
+            box-shadow: 0 10px 20px rgba(255, 64, 96, 0.4);
+            border: 4px solid white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mobile-frame">
+
+        <div class="header-bg">
+            <div class="user-nav">
+                <div class="user-info">
+                    <h2>Olá, Admin</h2>
+                    <p>Visão Geral do Sistema</p>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-content">
+
+            <div class="stats-grid">
+                <div class="stat-card stat-pink">
+                    <div>
+                        <h3>12</h3>
+                        <span>Chamados<br>Pendentes</span>
+                    </div>
+                    <i class="fas fa-exclamation-circle" style="align-self: flex-end; opacity: 0.8;"></i>
+                    <div class="bg-circle bg-pink"></div>
+                </div>
+
+                <div class="stat-card stat-blue">
+                    <div>
+                        <h3>45</h3>
+                        <span>Finalizados<br>Hoje</span>
+                    </div>
+                    <i class="fas fa-check-circle" style="align-self: flex-end; color: var(--primary-blue);"></i>
+                    <div class="bg-circle bg-blue"></div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="section-header">
+                    <span class="section-title">Volume Semanal</span>
+                    <span class="tag-pill">Semana 42</span>
+                </div>
+
+                <div class="bar-chart">
+                    <div class="bar-group">
+                        <div class="bar b-blue" style="height: 40px;"></div>
+                        <span class="bar-label">Seg</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar b-blue" style="height: 60px;"></div>
+                        <span class="bar-label">Ter</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar b-pink active" style="height: 90px;"></div>
+                        <span class="bar-label">Qua</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar b-blue" style="height: 50px;"></div>
+                        <span class="bar-label">Qui</span>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar b-blue" style="height: 70px;"></div>
+                        <span class="bar-label">Sex</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sla-widget">
+                <div class="donut-chart">
+                    <div class="donut-hole">
+                        <i class="fas fa-stopwatch donut-icon"></i>
+                    </div>
+                </div>
+                <div class="sla-info">
+                    <h4>Meta de SLA</h4>
+                    <p>75% dos chamados atendidos em < 2 horas.</p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px; margin-top: 10px;">
+                <span class="section-title" style="font-size: 16px;">Prioridade Alta</span>
+            </div>
+
+            <div
+                style="background: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <div
+                    style="width: 40px; height: 40px; background: #FF4060; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; margin-right: 15px;">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div>
+                    <h5 style="font-size: 14px; margin-bottom: 2px;">Queda no Servidor</h5>
+                    <p style="font-size: 11px; color: #888;">Setor Financeiro • 10 min atrás</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-th-large"></i>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="fab">
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-cog"></i>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

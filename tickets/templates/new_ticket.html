@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Chamado - Sistema de Tickets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/global.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}?v=7">
+    <script src="{% static 'js/mobile.js' %}" defer></script>
+</head>
+
+<body>
+
+    {% include 'partials/sidebar.html' %}
+    <main class="main-content">
+
+        <header style="justify-content: flex-start;">
+            <i class="fa-solid fa-bars mobile-menu-toggle"></i>
+        </header>
+        <div class="page-header">
+            <p>Preencha os dados para abrir um ticket de suporte</p>
+        </div>
+
+        <div class="form-card">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Categoria -->
+                <div class="input-group">
+                    <label>Categoria <span>*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-list"></i>
+                        <select name="category" class="form-control" required>
+                            <option value="" disabled selected>Selecione...</option>
+                            {% for categoria in form.fields.category.queryset %}
+                            <option value="{{ categoria.id }}">{{ categoria.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                {% if request.user.is_technician %}
+                <!-- Atribuir a (Apenas Técnicos) -->
+                <div class="input-group">
+                    <label>Atribuir a (Opcional)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-tag"></i>
+                        <select name="attributed_to" class="form-control">
+                            <option value="" selected>-- Sem atribuição --</option>
+                            {% for tech in technicians %}
+                            <option value="{{ tech.id }}">{{ tech.display_name|default:tech.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Prioridade -->
+                <div class="input-group">
+                    <label>Prioridade <span>*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="priority" value="BAX"> Baixa</label>
+                        <label><input type="radio" name="priority" value="MED"> Média</label>
+                        <label><input type="radio" name="priority" value="ALT"> Alta</label>
+                        <label><input type="radio" name="priority" value="URG"> <strong
+                                style="color:red">Urgente</strong></label>
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div class="input-group">
+                    <label>Descrição <span>*</span></label>
+                    <div class="input-wrapper items-start">
+                        <i class="fa-solid fa-align-left"></i>
+                        <textarea name="description" class="form-control" required
+                            placeholder="Descreva seu problema com detalhes..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Anexo -->
+                <div class="input-group">
+                    <label>Anexo (Opcional)</label>
+
+                    <div class="file-upload-wrapper" id="uploadWrapper">
+                        <input type="file" name="attachment" id="attachmentInput" hidden>
+
+                        <i class="fa-solid fa-cloud-arrow-up" id="uploadIcon"></i>
+                        <p id="uploadText">Clique ou arraste um arquivo para cá</p>
+                        <span style="font-size: 11px; color: #999; display: block; margin-top: 5px;">Formatos: JPG, PNG,
+                            PDF (Máx. 5MB)</span>
+
+                        <button type="button" class="remove-file" id="removeFileBtn" hidden title="Remover arquivo">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="form-actions">
+                    <a href="javascript:history.back()" class="btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i> Enviar Chamado
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+
+</body>
+<script>
+    const input = document.getElementById("attachmentInput");
+    const wrapper = document.getElementById("uploadWrapper");
+    const text = document.getElementById("uploadText");
+    const removeBtn = document.getElementById("removeFileBtn");
+    const originalText = "Clique ou arraste um arquivo para cá";
+
+    // Clique para selecionar
+    wrapper.addEventListener("click", () => input.click());
+
+    // Funções de Arrastar e Soltar (Drag & Drop)
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        wrapper.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        wrapper.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        wrapper.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        wrapper.style.borderColor = "var(--accent-orange)";
+        wrapper.style.backgroundColor = "rgba(252, 163, 17, 0.05)";
+    }
+
+    function unhighlight() {
+        wrapper.style.borderColor = "#ddd";
+        wrapper.style.backgroundColor = "#fafafa";
+    }
+
+    wrapper.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            input.files = files;
+            updateFileInfo();
+        }
+    }
+
+    // Mudança no input file (via clique)
+    input.addEventListener("change", updateFileInfo);
+
+    function updateFileInfo() {
+        if (input.files.length > 0) {
+            text.textContent = input.files[0].name;
+            wrapper.classList.add("file-selected");
+            removeBtn.hidden = false;
+        }
+    }
+
+    // Botão de remover arquivo
+    removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        input.value = "";
+        text.textContent = originalText;
+        wrapper.classList.remove("file-selected");
+        removeBtn.hidden = true;
+        unhighlight(); // Reseta estilo caso tenha ficado preso
+    });
+</script>
+
+</html>
