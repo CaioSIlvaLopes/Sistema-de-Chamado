@@ -76,13 +76,3 @@ def create_chat_notification(sender, instance, created, **kwargs):
                 title=f"Nova mensagem no chamado #{ticket.id}",
                 message=f"{msg_sender.username}: {instance.message[:50]}..." if instance.message else "Nova imagem anexada."
             )
-
-from .services import notificar_tecnico_email
-
-@receiver(post_save, sender=Tickets)
-def notificar_tecnico_ao_criar_chamado(sender, instance, created, **kwargs):
-    """
-    Envia notificação por email para o técnico quando um chamado é criado.
-    """
-    if created:
-        notificar_tecnico_email(instance)

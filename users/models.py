@@ -39,7 +39,6 @@ class Account(AbstractUser):
     display_name = models.CharField(max_length=200, verbose_name="Nome Completo", blank=True)
     
     email_confirmed = models.BooleanField(default=False, verbose_name="Email Confirmado")
-    verification_code = models.CharField(max_length=6, blank=True, null=True, verbose_name="Código de Verificação")
 
     def __str__(self):
         return self.username
