@@ -42,47 +42,48 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 from .tokens import account_activation_token
 
+import random
+
 def register(request):
     if request.method == 'POST':
         print("DEBUG: Register POST request received")
         form = AccountRegisterForm(request.POST)
         if form.is_valid():
             print("DEBUG: Form is valid")
-            user = form.save(commit=False)
-            user.is_active = False # Deactivate user until email is confirmed
-            user.email_confirmed = False
-            user.save()
-            print(f"DEBUG: User {user.username} created (inactive)")
+            # We don't save the user yet!
+            # Instead, we store the cleaned data in the session
+            registration_data = form.cleaned_data
+            # Convert enterprise object to ID for session storage if it exists
+            if registration_data.get('enterprise'):
+                registration_data['enterprise_id'] = registration_data['enterprise'].id
+                del registration_data['enterprise']
+            
+            # Generate 6-digit code
+            code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+            
+            # Store data and code in session
+            request.session['pending_registration'] = registration_data
+            request.session['pending_verification_code'] = code
+            request.session['verification_email'] = registration_data['email']
+            
+            print(f"DEBUG: Registration data stored in session. Verification code: {code}")
 
             # Email Confirmation Logic
-            current_site = get_current_site(request)
             mail_subject = 'Ative sua conta - Sistema de Chamados'
+            message = f"Olá {registration_data['username']},\n\nSeu código de verificação é: {code}\n\nPor favor, insira este código no site para ativar sua conta.\n\nObrigado!"
             
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = account_activation_token.make_token(user)
-            print(f"DEBUG: Generated UID for link: {uid}")
-            print(f"DEBUG: Generated Token for link: {token}")
-            
-            # Simple text message for now, or use a template
-            activation_link = f"http://{current_site.domain}/users/activate/{uid}/{token}/"
-            message = f"Olá {user.username},\n\nPor favor, clique no link abaixo para confirmar seu cadastro:\n\n{activation_link}\n\nObrigado!"
-            
-            print(f"\nDEBUG: --- CLICK THIS LINK TO ACTIVATE ---")
-            print(f"{activation_link}")
-            print(f"DEBUG: -----------------------------------\n")
-
-            to_email = form.cleaned_data.get('email')
+            to_email = registration_data['email']
             print(f"DEBUG: Preparing to send email to {to_email}")
             email = EmailMessage(
                 mail_subject, message, to=[to_email]
             )
             try:
                 email.send()
-                print("DEBUG: Email sent successfully via ConsoleBackend")
+                print("DEBUG: Email sent successfully")
             except Exception as e:
                 print(f"DEBUG: Error sending email: {e}")
 
-            messages.success(request, 'Conta criada! Verifique seu email para confirmar o cadastro.')
+            messages.success(request, 'Verifique seu email para obter o código de confirmação.')
             return redirect('registration_pending')
         else:
             print("DEBUG: Form is INVALID")
@@ -93,9 +94,57 @@ def register(request):
     return render(request, 'register_client.html', {'form': form})
 
 def registration_pending(request):
-    return render(request, 'registration_pending.html')
+    email = request.session.get('verification_email', 'seu email')
+    return render(request, 'registration_pending.html', {'email': email})
+
+def verify_email(request):
+    if request.method == 'POST':
+        code = request.POST.get('codigo')
+        registration_data = request.session.get('pending_registration')
+        correct_code = request.session.get('pending_verification_code')
+        
+        if not registration_data or not correct_code:
+            messages.error(request, 'Sessão expirada. Por favor, tente registrar novamente.')
+            return redirect('register_client')
+            
+        if code == correct_code:
+            # Code matches! Now we create the user
+            password = registration_data.pop('password1') # AbstractUser doesn't have password1 field
+            registration_data.pop('password2', None)
+            
+            # Handle enterprise_id
+            enterprise_id = registration_data.pop('enterprise_id', None)
+            
+            user = Account(**registration_data)
+            user.set_password(password)
+            user.is_active = True
+            user.email_confirmed = True
+            
+            if enterprise_id:
+                from .models import Enterprise
+                user.enterprise = Enterprise.objects.get(id=enterprise_id)
+            
+            user.save()
+            print(f"DEBUG: User {user.username} successfully created and activated.")
+            
+            # Clear session
+            del request.session['pending_registration']
+            del request.session['pending_verification_code']
+            
+            login(request, user)
+            messages.success(request, 'Email confirmado com sucesso! Bem-vindo.')
+            if user.is_technician:
+                return redirect('dashboard_technical')
+            else:
+                return redirect('novo_ticket')
+        else:
+            messages.error(request, 'Código inválido. Verifique seu email e tente novamente.')
+            return render(request, 'registration_pending.html', {'email': registration_data['email']})
+            
+    return redirect('login_client')
 
 def activate(request, uidb64, token):
+    # Keep old activate view for compatibility if needed, but it's not being used anymore
     print(f"DEBUG: Activate view called with uidb64={uidb64}, token={token}")
     User = get_user_model()
     try:
