@@ -10,9 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='account',
-            name='email_confirmed',
-            field=models.BooleanField(default=False, verbose_name='Email Confirmado'),
-        ),
     ]
